@@ -44,6 +44,5 @@ _link_bss:
 
 _c_main:
         ldr sp, =0x3007f00
-        mov fp, sp
-        ldr lr, =_start
-        bx lr
+        ldr r0, =_main
+        bx r0

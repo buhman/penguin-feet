@@ -33,6 +33,7 @@ SECTIONS
   rom.data BLOCK(32) : ALIGN(4)
   {
     *(.data)
+    *(.rodata)
     . = (. + 0x1f) & ~0x1f;
   } > iwram AT > gprom
 
@@ -50,4 +51,9 @@ SECTIONS
 
   __bss_link_start = ADDR(rom.bss);
   __bss_link_end = ADDR(rom.bss) + SIZEOF(rom.bss);
+
+  rom.image :
+  {
+    *(.data.image*)
+  } > gprom
 }

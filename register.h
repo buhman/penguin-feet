@@ -16,7 +16,7 @@
 #define DISPCNT__BG0 (1 << 8)
 #define DISPCNT__FORCED_BLANK (1 << 7)
 #define DISPCNT__OBJ_1_DIMENSION (1 << 6)
-#define DISPCNT__FRAMEBUFFER(n) (n << 4) /* 1-bit */
+#define DISPCNT__FRAMEBUFFER(n) ((n) << 4) /* 1-bit */
 #define DISPCNT__BG_MODE_0 (0 << 0)
 #define DISPCNT__BG_MODE_1 (1 << 0)
 #define DISPCNT__BG_MODE_2 (2 << 0)
@@ -30,13 +30,13 @@
 #define BG2CNT 0x00c
 #define BG3CNT 0x00e
 
-#define BG_CNT__CHARACTER_BASE_BLOCK(n) (n << 2)
+#define BG_CNT__CHARACTER_BASE_BLOCK(n) ((n) << 2)
 #define BG_CNT__MOSAIC (1 << 6)
 #define BG_CNT__COLOR_16_16 0
 #define BG_CNT__COLOR_256 (1 << 7)
-#define BG_CNT__SCREEN_BASE_BLOCK(n) (n << 8)
-#define BG_CNT__SCREEN_SIZE(n) (n << 14)
-#define BG_CNT__PRIORITY(n) (n << 0)
+#define BG_CNT__SCREEN_BASE_BLOCK(n) ((n) << 8)
+#define BG_CNT__SCREEN_SIZE(n) ((n) << 14)
+#define BG_CNT__PRIORITY(n) ((n) << 0)
 
 #define MOSAIC 0x04c
 
@@ -61,7 +61,7 @@
 #define BG3VOFS 0x01e
 
 /* text screen */
-#define SCREEN_TEXT__PALETTE(n) (n << 12)
+#define SCREEN_TEXT__PALETTE(n) ((n) << 12)
 #define SCREEN_TEXT__H_FLIP (1 << 10)
 #define SCREEN_TEXT__V_FLIP (1 << 11)
 
@@ -76,21 +76,21 @@
 #define OBJ_A0__MODE_WINDOW    (0b10 << 10)
 #define OBJ_A0__DOUBLE_SIZE      (1 << 9)
 #define OBJ_A0__ROTATION_SCALING (1 << 8)
-#define OBJ_A0__Y_COORDINATE(n)  (n << 0) /* 8-bit */
+#define OBJ_A0__Y_COORDINATE(n)  ((n) << 0) /* 8-bit */
 
 #define OBJ__SQUARE_8_8   (0)
 #define OBJ__SQUARE_16_16 (1)
 #define OBJ__SQUARE_32_32 (2)
 #define OBJ__SQUARE_64_64 (3)
-#define OBJ_A1__SIZE(n) (n << 14) /* 2-bit */
+#define OBJ_A1__SIZE(n) ((n) << 14) /* 2-bit */
 #define OBJ_A1__V_FLIP  (1 << 13)
 #define OBJ_A1__H_FLIP  (1 << 12)
-#define OBJ_A1__ROTATION_SCALING(n) (n << 9) /* 5-bit */
-#define OBJ_A1__X_COORDINATE(n) (n << 0) /* 9-bit */
+#define OBJ_A1__ROTATION_SCALING(n) ((n) << 9) /* 5-bit */
+#define OBJ_A1__X_COORDINATE(n) ((n) << 0) /* 9-bit */
 
-#define OBJ_A2__COLOR_PALETTE(n) (n << 12) /* 4-bit */
-#define OBJ_A2__PRIORITY(n)  (n << 10) /* 2-bit */
-#define OBJ_A2__CHARACTER(n) (n << 0) /* 10-bit */
+#define OBJ_A2__COLOR_PALETTE(n) ((n) << 12) /* 4-bit */
+#define OBJ_A2__PRIORITY(n)  ((n) << 10) /* 2-bit */
+#define OBJ_A2__CHARACTER(n) ((n) << 0) /* 10-bit */
 
 /* 14 Key Input */
 #define KEY_INPUT 0x130
@@ -146,46 +146,46 @@
 
 #define SOUND1_CNT_L 0x060
 #define SOUND1_CNT_L__SWEEP_TIME_OFF 0
-#define SOUND1_CNT_L__SWEEP_TIME(n) (n << 4)
+#define SOUND1_CNT_L__SWEEP_TIME(n) ((n) << 4)
 #define SOUND1_CNT_L__SWEEP_DECREASE (1 << 3)
-#define SOUND1_CNT_L__SWEEP_SHIFTS(n) (n << 0)
+#define SOUND1_CNT_L__SWEEP_SHIFTS(n) ((n) << 0)
 
 #define SOUND1_CNT_H 0x062
-#define SOUND1_CNT_H__ENVELOPE_VALUE(n) (n << 12)
+#define SOUND1_CNT_H__ENVELOPE_VALUE(n) ((n) << 12)
 #define SOUND1_CNT_H__ENVELOPE_AMPLIFY (1 << 11)
-#define SOUND1_CNT_H__ENVELOPE_STEPS(n) (n << 8)
-#define SOUND1_CNT_H__DUTY_CYCLE(n) (n << 6)
-#define SOUND1_CNT_H__SOUND_LENGTH(n) (n << 0)
+#define SOUND1_CNT_H__ENVELOPE_STEPS(n) ((n) << 8)
+#define SOUND1_CNT_H__DUTY_CYCLE(n) ((n) << 6)
+#define SOUND1_CNT_H__SOUND_LENGTH(n) ((n) << 0)
 
 #define SOUND1_CNT_X 0x064
 #define SOUND1_CNT_X__RESTART (1 << 15)
 #define SOUND1_CNT_X__SOUND_LENGTH (1 << 14)
-#define SOUND1_CNT_X__FREQUENCY_DATA(n) (n << 0)
+#define SOUND1_CNT_X__FREQUENCY_DATA(n) ((n) << 0)
 
 #define SOUND2_CNT_L 0x68
-#define SOUND2_CNT_L__ENVELOPE_VALUE(n) (n << 12)
+#define SOUND2_CNT_L__ENVELOPE_VALUE(n) ((n) << 12)
 #define SOUND2_CNT_L__ENVELOPE_AMPLIFY (1 << 11)
-#define SOUND2_CNT_L__ENVELOPE_STEPS(n) (n << 8)
-#define SOUND2_CNT_L__DUTY_CYCLE(n) (n << 6)
-#define SOUND2_CNT_L__SOUND_LENGTH(n) (n << 0)
+#define SOUND2_CNT_L__ENVELOPE_STEPS(n) ((n) << 8)
+#define SOUND2_CNT_L__DUTY_CYCLE(n) ((n) << 6)
+#define SOUND2_CNT_L__SOUND_LENGTH(n) ((n) << 0)
 
 #define SOUND2_CNT_H 0x06c
 #define SOUND2_CNT_H__RESTART (1 << 15)
 #define SOUND2_CNT_H__SOUND_LENGTH (1 << 14)
-#define SOUND2_CNT_H__FREQUENCY_DATA(n) (n << 0)
+#define SOUND2_CNT_H__FREQUENCY_DATA(n) ((n) << 0)
 
 #define SOUND4_CNT_L 0x78
-#define SOUND4_CNT_L__ENVELOPE_VALUE(n) (n << 12)
+#define SOUND4_CNT_L__ENVELOPE_VALUE(n) ((n) << 12)
 #define SOUND4_CNT_L__ENVELOPE_AMPLIFY (1 << 11)
-#define SOUND4_CNT_L__ENVELOPE_STEPS(n) (n << 8)
-#define SOUND4_CNT_L__SOUND_LENGTH(n) (n << 0)
+#define SOUND4_CNT_L__ENVELOPE_STEPS(n) ((n) << 8)
+#define SOUND4_CNT_L__SOUND_LENGTH(n) ((n) << 0)
 
 #define SOUND4_CNT_H 0x07c
 #define SOUND4_CNT_H__RESTART (1 << 15)
 #define SOUND4_CNT_H__SOUND_LENGTH (1 << 14)
-#define SOUND4_CNT_H__COUNTER_SHIFT_FREQ(n) (n << 4)
+#define SOUND4_CNT_H__COUNTER_SHIFT_FREQ(n) ((n) << 4)
 #define SOUND4_CNT_H__COUNTER_7_STEP (1 << 3)
-#define SOUND4_CNT_H__COUNTER_PRESCALAR(n) (n << 0)
+#define SOUND4_CNT_H__COUNTER_PRESCALAR(n) ((n) << 0)
 
 #define SOUNDCNT_L 0x080
 #define SOUNDCNT_L__OUTPUT_1_L (1 << 12)
@@ -196,8 +196,8 @@
 #define SOUNDCNT_L__OUTPUT_2_R (1 << 9)
 #define SOUNDCNT_L__OUTPUT_3_R (1 << 10)
 #define SOUNDCNT_L__OUTPUT_4_R (1 << 11)
-#define SOUNDCNT_L__OUTPUT_LEVEL_L(n) (n << 4)
-#define SOUNDCNT_L__OUTPUT_LEVEL_R(n) (n << 0)
+#define SOUNDCNT_L__OUTPUT_LEVEL_L(n) ((n) << 4)
+#define SOUNDCNT_L__OUTPUT_LEVEL_R(n) ((n) << 0)
 
 #define SOUNDCNT_H 0x082
 #define SOUNDCNT_H__OUTPUT_RATIO_QUARTER (0)
