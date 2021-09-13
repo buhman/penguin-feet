@@ -21,16 +21,21 @@ static const struct offset neighbors[NEIGHBORS_LENGTH] = {
 #define XY_VALUE UCS_XY_VALUE
 #define IN_BITMAP(bitmap, x, y) ((bitmap[y] >> x) & 1)
 
+#ifdef PRIORITY_DEMO
+void ucs(const u32 * graph, const value_t source, value_t * path, priority_t * min_priority)
+#else
 void ucs(const u32 * graph, const value_t source, value_t * path)
+#endif
 {
   min_heap_t heap;
   heap.index = 0;
   min_heap_insert(&heap, 0, source);
 
-  //value_t min_priority[GRAPH_AREA];
   for (u32 i = 0; i < (GRAPH_AREA / 2); i++) {
     ((u32 *)path)[i] = (u32)-1;
-    //((u32 *)min_priority)[i] = (u32)-1;
+    #ifdef PRIORITY_DEMO
+    ((u32 *)min_priority)[i] = (u32)-1;
+    #endif
   }
 
   u32 visited[32];
@@ -61,16 +66,18 @@ void ucs(const u32 * graph, const value_t source, value_t * path)
         visited[v_y] |= (1 << v_x);
 
         path[v_value] = u_value;
-        //min_priority[v_value] = v_priority;
+        #ifdef PRIORITY_DEMO
+        min_priority[v_value] = v_priority;
+        #endif
       }
 
-      /*
+      #ifdef PRIORITY_DEMO
       if (v_priority < min_priority[v_value]) {
-        min_heap_decrease_priority(&heap, v_priority, v_value);
-        path[v_value] = u_value;
+        //min_heap_decrease_priority(&heap, v_priority, v_value);
+        //path[v_value] = u_value;
         min_priority[v_value] = v_priority;
       }
-      */
+      #endif
     }
   }
 }
