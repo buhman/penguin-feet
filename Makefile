@@ -49,6 +49,7 @@ BACKGROUND_OBJ += image/background.character.o
 LEVEL_OBJ = level/0.level.o
 
 OBJS = header.o load.o main.o palette.o tile.o copy16.o
+OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o penguin.o background.o graph.o
 OBJS += $(LEVEL_OBJ)
 OBJS += $(PENGUIN_OBJ)

@@ -8,6 +8,7 @@
 #include "penguin.h"
 #include "background.h"
 #include "graph.h"
+#include "path_debug.h"
 
 #define DPAD_RIGHT KEYCNT__INPUT_RIGHT
 #define DPAD_LEFT  KEYCNT__INPUT_LEFT
@@ -92,7 +93,9 @@ void _main(void)
   //maze_init();
   level_init();
   penguin_init();
-  background_init();
+  //background_init();
+  path_debug_init();
+
 
   *(volatile unsigned short *)(IO_REG + BG0CNT) =
     ( BG_CNT__COLOR_16_16
@@ -107,7 +110,7 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(1)
     | BG_CNT__SCREEN_BASE_BLOCK(30)
-    | BG_CNT__PRIORITY(1)
+    | BG_CNT__PRIORITY(0)
     );
 
   *(volatile unsigned short *)(IO_REG + DISPCNT) =
@@ -124,7 +127,9 @@ void _main(void)
   *(volatile unsigned short *)(IO_REG + IE) = IE__V_BLANK;
   *(volatile unsigned short *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
-  while (1) {}
+  while (1) {
+    *(volatile unsigned char *)(IO_REG + HALTCNT) = 0;
+  }
 }
 
 void _start(void)

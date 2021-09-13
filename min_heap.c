@@ -13,9 +13,9 @@ static_assert((sizeof (node_t)) == (sizeof (u32)));
     if (heap->tree[ix].priority > heap->tree[parent_ix].priority) \
       break; \
     \
-    node_t tmp = heap->tree[ix]; \
-    heap->tree[ix] = heap->tree[parent_ix]; \
-    heap->tree[parent_ix] = tmp; \
+    u32 tmp = ((u32 *)&heap->tree[0])[ix]; \
+    ((u32 *)&heap->tree[0])[ix] = ((u32 *)&heap->tree[0])[parent_ix]; \
+    ((u32 *)&heap->tree[0])[parent_ix] = tmp; \
     ix = parent_ix; \
   }
 
@@ -29,8 +29,6 @@ void min_heap_insert(min_heap_t * heap, const priority_t priority, const value_t
   _HEAP_UP
 }
 
-#include <stdio.h>
-
 void min_heap_decrease_priority(min_heap_t * heap, const priority_t priority, const value_t value)
 {
   index_t ix;
@@ -41,7 +39,6 @@ void min_heap_decrease_priority(min_heap_t * heap, const priority_t priority, co
   }
 
   if (ix == heap->index) {
-    fprintf(stderr, "%d %d\n", priority, value);
     assert(0);
   }
 
@@ -60,7 +57,7 @@ void min_heap_extract(min_heap_t * heap, priority_t * priority, value_t * value)
   if (heap->index == 0)
     return;
 
-  heap->tree[ix] = heap->tree[--heap->index];
+  ((u32 *)&heap->tree[0])[ix] = ((u32 *)&heap->tree[0])[--heap->index];
 
   while (1) {
     index_t swap_ix = CHILD_L(ix);
@@ -73,9 +70,9 @@ void min_heap_extract(min_heap_t * heap, priority_t * priority, value_t * value)
     if (heap->tree[swap_ix].priority > heap->tree[ix].priority)
       break;
 
-    node_t tmp = heap->tree[ix];
-    heap->tree[ix] = heap->tree[swap_ix];
-    heap->tree[swap_ix] = tmp;
+    u32 tmp = ((u32 *)&heap->tree[0])[ix];
+    ((u32 *)&heap->tree[0])[ix] = ((u32 *)&heap->tree[0])[swap_ix];
+    ((u32 *)&heap->tree[0])[swap_ix] = tmp;
     ix = swap_ix;
   }
 }
