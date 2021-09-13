@@ -4,13 +4,10 @@
 #include "palette.h"
 #include "tile.h"
 
-#include "maze.h"
+#include "level.h"
 #include "penguin.h"
 #include "background.h"
 #include "graph.h"
-
-static unsigned int v_blank = 0;
-static unsigned short key_input = 0;
 
 #define DPAD_RIGHT KEYCNT__INPUT_RIGHT
 #define DPAD_LEFT  KEYCNT__INPUT_LEFT
@@ -41,10 +38,10 @@ void _user_isr(void)
 {
   *(volatile unsigned short *)(IO_REG + IME) = 0;
 
-  v_blank++;
-  key_input |= ~(*(volatile unsigned short *)(IO_REG + KEY_INPUT));
-
   /* */
+
+  /*
+  key_input = ~(*(volatile unsigned short *)(IO_REG + KEY_INPUT));
 
   unsigned int next_heading = 0;
 
@@ -82,11 +79,7 @@ void _user_isr(void)
     }
     penguin_update(penguin.x, penguin.y);
   }
-
-  /* */
-
-  key_input = 0;
-  v_blank = 0;
+  */
 
   *(volatile unsigned short *)(IO_REG + IF) = IE__V_BLANK;
   *(volatile unsigned short *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
@@ -96,7 +89,8 @@ void _user_isr(void)
 
 void _main(void)
 {
-  maze_init();
+  //maze_init();
+  level_init();
   penguin_init();
   background_init();
 

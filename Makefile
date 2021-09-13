@@ -15,11 +15,17 @@ endef
 %.character.o: %.character
 	$(BUILD_BINARY_O)
 
+%.level.o: %.level
+	$(BUILD_BINARY_O)
+
 %.character: %.data
 	python pack-character.py $< $(basename $<).dim $@
 
 %.palette: %.pal
 	python pack-palette.py $< $@
+
+%.level: %.data
+	python pack-level.py $< $@
 
 maze_tile_%.character: maze_tile_%.data
 	python pack-character.py $< $(@D)/maze_tile.dim $@
@@ -40,14 +46,16 @@ PENGUIN_OBJ += image/penguin.character.o
 BACKGROUND_OBJ = image/background.palette.o
 BACKGROUND_OBJ += image/background.character.o
 
-OBJS = header.o load.o main.o palette.o tile.o
-OBJS += maze.o penguin.o background.o graph.o
-OBJS += $(MAZE_TILE_OBJ)
+LEVEL_OBJ = level/0.level.o
+
+OBJS = header.o load.o main.o palette.o tile.o copy16.o
+OBJS += level.o penguin.o background.o graph.o
+OBJS += $(LEVEL_OBJ)
 OBJS += $(PENGUIN_OBJ)
 OBJS += $(BACKGROUND_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
-	$(LD) -Map=$@.map -T animals.lds $^ -o $@
+	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@
 
 SNES_OBJS = header.o load.o main_gpio.o
 snes.elf: $(SNES_OBJS) | animals.lds

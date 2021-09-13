@@ -12,12 +12,6 @@ def decode_character_into():
     pass
 
 
-class OAM:
-    # 1024 characters in modes 0,1,2
-    width = 0x20
-    height = 0x20
-
-
 character_size = 8 * 8
 
 

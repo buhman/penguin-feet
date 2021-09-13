@@ -18,12 +18,12 @@ void penguin_init(void)
   *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 0)) =
     ( OBJ_A0__SHAPE_SQUARE
     | OBJ_A0__MODE_NORMAL
-    | OBJ_A0__Y_COORDINATE(8)
+    | OBJ_A0__Y_COORDINATE(0)
     );
 
   *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 1)) =
     ( OBJ_A1__SIZE(OBJ__SQUARE_16_16)
-    | OBJ_A1__X_COORDINATE(8)
+    | OBJ_A1__X_COORDINATE(0)
     );
 
   *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 2)) =

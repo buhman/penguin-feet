@@ -18,7 +18,7 @@ SECTIONS
 
   /* text */
 
-  rom.text : ALIGN(4)
+  rom.text : ALIGN(4) SUBALIGN(4)
   {
     *(.text*)
     . = (. + 0x1f) & ~0x1f;
@@ -52,8 +52,9 @@ SECTIONS
   __bss_link_start = ADDR(rom.bss);
   __bss_link_end = ADDR(rom.bss) + SIZEOF(rom.bss);
 
-  rom.image :
+  rom.image : ALIGN(4) SUBALIGN(4)
   {
     *(.data.image*)
+    *(.data.level*)
   } > gprom
 }
