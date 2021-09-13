@@ -4,8 +4,8 @@ import struct
 
 class filename:
     data = sys.argv[1]
-    data_dim = sys.argv[1] + ".dim"
-    dest = sys.argv[2]
+    data_dim = sys.argv[2]
+    dest = sys.argv[3]
 
 
 def decode_character_into():

@@ -62,8 +62,8 @@
 
 /* text screen */
 #define SCREEN_TEXT__PALETTE(n) ((n) << 12)
-#define SCREEN_TEXT__H_FLIP (1 << 10)
 #define SCREEN_TEXT__V_FLIP (1 << 11)
+#define SCREEN_TEXT__H_FLIP (1 << 10)
 
 /* 6.3 OBJ */
 #define OBJ_A0__SHAPE_SQUARE   (0b00 << 14)
@@ -255,7 +255,9 @@
 #define DMA0_CNT_H__DST_RELOAD (3 << 5)
 
 /* 16 Power Down */
-#define HALTCNT 0x301
+#define HALTCNT 0x301 /* 1 byte */
+#define HALTCNT__PAUSE 0x0
+#define HALTCNT__STOP 0x80
 
 /* 13 UART Communication Functions */
 #define SIODATA8 0x12a

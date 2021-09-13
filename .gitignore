@@ -1,7 +1,10 @@
 *.o
+*.out
 *.gba
 *.elf
 *.elf.*
 *.sav
 *.character
 *.palette
+test/*.dot
+test/*.svg

@@ -1,8 +1,9 @@
-ARCH = -mthumb-interwork -march=armv4t
-override CFLAGS += -Wall -mtune=arm7tdmi -ffreestanding -nostdlib -g -Og
-ASFLAGS = -g
+ARCH ?= -mthumb-interwork -march=armv4t
+override CFLAGS += -std=gnu2x -g -Og -Wall -Werror
+CARCH ?= -mtune=arm7tdmi -ffreestanding -nostdlib
+AFLAGS ?= -g
 
-TARGET = arm-none-eabi-
+TARGET ?= arm-none-eabi-
 CC = $(TARGET)gcc
 AS = $(TARGET)as
 LD = $(TARGET)ld
@@ -10,13 +11,13 @@ OBJCOPY = $(TARGET)objcopy
 OBJDUMP = $(TARGET)objdump
 
 %.o: %.S
-	$(CC) $(ARCH) $(ASFLAGS) -c $< -o $@
+	$(CC) $(ARCH) $(AFLAGS) -c $< -o $@
 
 %.o: %.s
-	$(AS) $(ARCH) $(ASFLAGS) $< -o $@
+	$(AS) $(ARCH) $(AFLAGS) $< -o $@
 
 %.o: %.c
-	$(CC) $(ARCH) $(CFLAGS) -c $< -o $@
+	$(CC) $(ARCH) $(CARCH) $(CFLAGS) -c $< -o $@
 
 %.elf: %.o
 	$(LD) $< -o $@
@@ -25,10 +26,12 @@ OBJDUMP = $(TARGET)objdump
 	$(OBJCOPY) -O binary $< $@
 
 dump:
-	arm-none-eabi-objdump -D -j .text $(F)
+	$(OBJDUMP) -D -j .text $(F)
 
 clean:
-	rm -f *.o *.out *.hex *.elf *.gba *.map
+	find -regextype posix-extended \
+		-regex '.*\.(o|out|hex|elf|gba|palette|character)' \
+		-exec rm -f {} \;
 
 deploy:
 	mount /dev/disk/by-label/GBA /mnt

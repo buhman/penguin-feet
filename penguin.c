@@ -1,0 +1,48 @@
+#include "base.h"
+#include "register.h"
+
+#include "copy16.h"
+#include "penguin.h"
+#include "penguin_image.h"
+
+void penguin_init(void)
+{
+  copy_16((void *)(PRAM_OBJ + PRAM_PALETTE(0)),
+          (void *)&_binary_image_penguin_palette_start,
+          (unsigned int)&_binary_image_penguin_palette_size);
+
+  copy_16((void *)(VRAM_OBJ + 32),
+          (void *)&_binary_image_penguin_character_start,
+          (unsigned int)&_binary_image_penguin_character_size);
+
+  *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 0)) =
+    ( OBJ_A0__SHAPE_SQUARE
+    | OBJ_A0__MODE_NORMAL
+    | OBJ_A0__Y_COORDINATE(8)
+    );
+
+  *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 1)) =
+    ( OBJ_A1__SIZE(OBJ__SQUARE_16_16)
+    | OBJ_A1__X_COORDINATE(8)
+    );
+
+  *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 2)) =
+    ( OBJ_A2__COLOR_PALETTE(0)
+    | OBJ_A2__PRIORITY(0)
+    | OBJ_A2__CHARACTER(1)
+    );
+}
+
+void penguin_update(unsigned int x, unsigned int y)
+{
+  *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 0)) =
+    ( OBJ_A0__SHAPE_SQUARE
+    | OBJ_A0__MODE_NORMAL
+    | OBJ_A0__Y_COORDINATE(y - 8)
+    );
+
+  *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 1)) =
+    ( OBJ_A1__SIZE(OBJ__SQUARE_16_16)
+    | OBJ_A1__X_COORDINATE(x - 8)
+    );
+}
