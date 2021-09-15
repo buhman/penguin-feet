@@ -9,6 +9,7 @@
 #include "background.h"
 #include "graph.h"
 #include "path_debug.h"
+#include "type.h"
 
 #define DPAD_RIGHT KEYCNT__INPUT_RIGHT
 #define DPAD_LEFT  KEYCNT__INPUT_LEFT
@@ -19,71 +20,98 @@ enum heading {
   DIR_NONE = 0,
   DIR_RIGHT = 1,
   DIR_LEFT = 2,
-  DIR_UP = 4,
-  DIR_DOWN = 8,
+  DIR_UP = 3,
+  DIR_DOWN = 4,
 };
 
 struct actor {
-  unsigned short x;
-  unsigned short y;
-  unsigned char heading;
+  u16 x;
+  u16 y;
+  u8 heading;
+  u8 next_heading;
 };
 
 static struct actor penguin = {
   .x = 0,
   .y = 0,
   .heading = DIR_NONE,
+  .next_heading = DIR_NONE,
 };
+
+static u8 screen = 30;
 
 void _user_isr(void)
 {
-  *(volatile unsigned short *)(IO_REG + IME) = 0;
+  *(volatile u16 *)(IO_REG + IME) = 0;
 
   /* */
 
+  u32 key_input = ~(*(volatile u16 *)(IO_REG + KEY_INPUT));
+
+  u32 dpad = (key_input >> 4) & 0b1111;
+
+  switch (dpad) {
+  case (KEYCNT__INPUT_RIGHT >> 4):
+    penguin.next_heading = DIR_RIGHT;
+    break;
+  case (KEYCNT__INPUT_LEFT >> 4):
+    penguin.next_heading = DIR_LEFT;
+    break;
+  case (KEYCNT__INPUT_UP >> 4):
+    penguin.next_heading = DIR_UP;
+    break;
+  case (KEYCNT__INPUT_DOWN >> 4):
+    penguin.next_heading = DIR_DOWN;
+    break;
+  default:
+    penguin.next_heading = penguin.heading;
+    break;
+  }
+
+  /* */
+
+  u32 next_x = penguin.x;
+  u32 next_y = penguin.y;
+  switch (penguin.next_heading) {
+  case DIR_RIGHT:
+    next_x += 1;
+    break;
+  case DIR_LEFT:
+    next_x -= 1;
+    break;
+  case DIR_UP:
+    next_y -= 1;
+    break;
+  case DIR_DOWN:
+    next_y += 1;
+    break;
+  }
+
   /*
-  key_input = ~(*(volatile unsigned short *)(IO_REG + KEY_INPUT));
-
-  unsigned int next_heading = 0;
-
-  if      ((key_input & DPAD_RIGHT) && !(key_input & DPAD_LEFT)) next_heading |= DIR_RIGHT;
-  else if  (key_input & DPAD_LEFT)                               next_heading |= DIR_LEFT;
-
-  if      ((key_input & DPAD_UP) && !(key_input & DPAD_DOWN))    next_heading |= DIR_UP;
-  else if  (key_input & DPAD_DOWN)                               next_heading |= DIR_DOWN;
-
-  if (next_heading == DIR_NONE) {
-    if (((penguin.x & 0b111) == 0) && ((penguin.y & 0b111) == 0))
-      penguin.heading = DIR_NONE;
-    else
-      next_heading = penguin.heading;
-  }
-
-  unsigned int next_x = penguin.x;
-  unsigned int next_y = penguin.y;
-  if (next_heading & DIR_RIGHT) next_x += 1;
-  if (next_heading & DIR_LEFT)  next_x -= 1;
-  if (next_heading & DIR_UP)    next_y -= 1;
-  if (next_heading & DIR_DOWN)  next_y += 1;
-
-  if (next_heading != DIR_NONE) {
-    if (graph_pathable(next_x, next_y)) {
-      penguin.x = next_x;
-      penguin.y = next_y;
-      penguin.heading |= next_heading;
-    } else if (graph_pathable(next_x, penguin.y)) {
-      penguin.x = next_x;
-      penguin.heading |= next_heading & 0b0011;
-    } else if (graph_pathable(penguin.x, next_y)) {
-      penguin.y = next_y;
-      penguin.heading |= next_heading & 0b1100;
-    }
-    penguin_update(penguin.x, penguin.y);
-  }
+    if (next_x == penguin.x && next_y == penguin.y)
+    goto _end;
   */
 
-  *(volatile unsigned short *)(IO_REG + IF) = IE__V_BLANK;
-  *(volatile unsigned short *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
+  penguin.x = next_x;
+  penguin.y = next_y;
+  penguin_update(penguin.x, penguin.y);
+
+  screen = (screen == 30) ? 29 : 30;
+
+  path_debug_update(penguin.x >> 3, penguin.y >> 3, screen);
+
+  *(volatile u16 *)(IO_REG + BG1CNT) =
+    ( BG_CNT__COLOR_16_16
+    | BG_CNT__SCREEN_SIZE(0)
+    | BG_CNT__CHARACTER_BASE_BLOCK(1)
+    | BG_CNT__SCREEN_BASE_BLOCK(screen)
+    | BG_CNT__PRIORITY(0)
+    );
+
+  /* */
+_end:
+  *(volatile u16 *)(IO_REG + IF) = IE__V_BLANK;
+  *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
   return;
 }
@@ -97,7 +125,7 @@ void _main(void)
   path_debug_init();
 
 
-  *(volatile unsigned short *)(IO_REG + BG0CNT) =
+  *(volatile u16 *)(IO_REG + BG0CNT) =
     ( BG_CNT__COLOR_16_16
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(0)
@@ -105,7 +133,7 @@ void _main(void)
     | BG_CNT__PRIORITY(1)
     );
 
-  *(volatile unsigned short *)(IO_REG + BG1CNT) =
+  *(volatile u16 *)(IO_REG + BG1CNT) =
     ( BG_CNT__COLOR_16_16
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(1)
@@ -113,7 +141,7 @@ void _main(void)
     | BG_CNT__PRIORITY(0)
     );
 
-  *(volatile unsigned short *)(IO_REG + DISPCNT) =
+  *(volatile u16 *)(IO_REG + DISPCNT) =
     ( DISPCNT__BG0
     | DISPCNT__BG1
     | DISPCNT__OBJ
@@ -121,14 +149,14 @@ void _main(void)
     | DISPCNT__BG_MODE_0
     );
 
-  *(volatile unsigned int *)(IWRAM_USER_ISR) = (unsigned int)(&_user_isr);
+  *(volatile u32 *)(IWRAM_USER_ISR) = (u32)(&_user_isr);
 
-  *(volatile unsigned short *)(IO_REG + DISPSTAT) = DISPSTAT__V_BLANK_INT_ENABLE;
-  *(volatile unsigned short *)(IO_REG + IE) = IE__V_BLANK;
-  *(volatile unsigned short *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
+  *(volatile u16 *)(IO_REG + DISPSTAT) = DISPSTAT__V_BLANK_INT_ENABLE;
+  *(volatile u16 *)(IO_REG + IE) = IE__V_BLANK;
+  *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
   while (1) {
-    *(volatile unsigned char *)(IO_REG + HALTCNT) = 0;
+    *(volatile u8 *)(IO_REG + HALTCNT) = 0;
   }
 }
 

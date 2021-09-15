@@ -27,16 +27,19 @@ void ucs(const u32 * graph, const value_t source, value_t * path, priority_t * m
 void ucs(const u32 * graph, const value_t source, value_t * path)
 #endif
 {
-  min_heap_t heap;
-  heap.index = 0;
-  min_heap_insert(&heap, 0, source);
-
   for (u32 i = 0; i < (GRAPH_AREA / 2); i++) {
     ((u32 *)path)[i] = (u32)-1;
     #ifdef PRIORITY_DEMO
     ((u32 *)min_priority)[i] = (u32)-1;
     #endif
   }
+
+  if (IN_BITMAP(graph, (u32)(source & 31), (u32)(source / 32)))
+    return;
+
+  min_heap_t heap;
+  heap.index = 0;
+  min_heap_insert(&heap, 0, source);
 
   u32 visited[32];
   for (u32 i = 0; i < 32; i++)
