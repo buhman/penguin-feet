@@ -1,4 +1,5 @@
 #include "type.h"
+#include "heap.h"
 
 void path_debug_init(void);
-void path_debug_update(u32 x, u32 y, u32 screen);
+void path_debug_update(value_t source, u32 screen);

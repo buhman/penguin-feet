@@ -11,6 +11,11 @@
 #include "path_debug.h"
 #include "type.h"
 
+#include "ucs.h"
+#include "heap.h"
+
+extern value_t graph_path[UCS_GRAPH_AREA];
+
 #define DPAD_RIGHT KEYCNT__INPUT_RIGHT
 #define DPAD_LEFT  KEYCNT__INPUT_LEFT
 #define DPAD_UP    KEYCNT__INPUT_UP
@@ -18,9 +23,9 @@
 
 enum heading {
   DIR_NONE = 0,
-  DIR_RIGHT = 1,
-  DIR_LEFT = 2,
-  DIR_UP = 3,
+  DIR_LEFT = 1, // -1
+  DIR_RIGHT = 2,
+  DIR_UP = 3, // -1
   DIR_DOWN = 4,
 };
 
@@ -64,7 +69,7 @@ void _user_isr(void)
     penguin.next_heading = DIR_DOWN;
     break;
   default:
-    penguin.next_heading = penguin.heading;
+    penguin.next_heading = DIR_NONE;
     break;
   }
 
@@ -72,18 +77,42 @@ void _user_isr(void)
 
   u32 next_x = penguin.x;
   u32 next_y = penguin.y;
-  switch (penguin.next_heading) {
-  case DIR_RIGHT:
-    next_x += 1;
-    break;
+  if (((penguin.x & 7) == 0) && ((penguin.y & 7) == 0))
+    penguin.heading = penguin.next_heading;
+  else {
+    switch (penguin.next_heading) {
+    case DIR_LEFT:
+    case DIR_RIGHT:
+      if (penguin.heading != DIR_UP && penguin.heading != DIR_DOWN) {
+        penguin.heading = penguin.next_heading;
+      }
+      break;
+    case DIR_UP:
+    case DIR_DOWN:
+      if (penguin.heading != DIR_LEFT && penguin.heading != DIR_RIGHT) {
+        penguin.heading = penguin.next_heading;
+      }
+      break;
+    }
+  }
+
+  value_t next;
+  s32 x_offset = 0;
+  s32 y_offset = 0;
+  switch (penguin.heading) {
   case DIR_LEFT:
     next_x -= 1;
+    break;
+  case DIR_RIGHT:
+    next_x += 1;
+    x_offset = ((next_x & 7) != 0);
     break;
   case DIR_UP:
     next_y -= 1;
     break;
   case DIR_DOWN:
     next_y += 1;
+    y_offset = ((next_y & 7) != 0);
     break;
   }
 
@@ -92,13 +121,24 @@ void _user_isr(void)
     goto _end;
   */
 
-  penguin.x = next_x;
-  penguin.y = next_y;
-  penguin_update(penguin.x, penguin.y);
+  u16 ucs_x = (u16)((next_x >> 3) + x_offset);
+  u16 ucs_y = (u16)((next_y >> 3) + y_offset);
+
+  next = UCS_XY_VALUE(ucs_x, ucs_y);
+  if (ucs_x >= 0 && ucs_x < 32 && ucs_y >= 0 && ucs_y < 32
+      && graph_path[next] != (value_t)(-1)) {
+    penguin.x = next_x;
+    penguin.y = next_y;
+    penguin_update(penguin.x, penguin.y);
+  }
 
   screen = (screen == 30) ? 29 : 30;
+  path_debug_update(UCS_XY_VALUE(penguin.x >> 3, penguin.y >> 3), screen);
 
-  path_debug_update(penguin.x >> 3, penguin.y >> 3, screen);
+  ((volatile u16 *)(VRAM + SCREEN_BASE_BLOCK(screen)))[ucs_y * 32 + ucs_x] =
+    ( SCREEN_TEXT__PALETTE(1)
+    | 4
+    );
 
   *(volatile u16 *)(IO_REG + BG1CNT) =
     ( BG_CNT__COLOR_16_16

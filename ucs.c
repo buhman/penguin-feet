@@ -34,7 +34,8 @@ void ucs(const u32 * graph, const value_t source, value_t * path)
     #endif
   }
 
-  if (IN_BITMAP(graph, (u32)(source & 31), (u32)(source / 32)))
+  if (source == (value_t)-1
+      || IN_BITMAP(graph, (u32)(source & 31), (u32)(source / 32)))
     return;
 
   min_heap_t heap;
