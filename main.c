@@ -23,15 +23,15 @@ enum heading {
   DIR_DOWN = 8,
 };
 
-struct penguin {
+struct actor {
   unsigned short x;
   unsigned short y;
   unsigned char heading;
 };
 
-static struct penguin penguin = {
-  .x = 16,
-  .y = 16,
+static struct actor penguin = {
+  .x = 0,
+  .y = 0,
   .heading = DIR_NONE,
 };
 

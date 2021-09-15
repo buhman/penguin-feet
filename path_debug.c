@@ -2,10 +2,11 @@
 #include "register.h"
 #include "color.h"
 #include "copy16.h"
-#include "level/0.level.h"
 
 #include "ucs.h"
 #include "heap.h"
+
+extern u32 level_graph[1][32];
 
 void path_debug_init(void)
 {
@@ -25,7 +26,7 @@ void path_debug_init(void)
   value_t source = UCS_XY_VALUE(0, 0);
   value_t target = UCS_XY_VALUE(8, 8);
 
-  u32 * graph = (u32 *)&_binary_level_0_level_start;
+  u32 * graph = &level_graph[0][0];
 
   ucs(graph, source, &path[0]);
 
