@@ -22,16 +22,16 @@ int main(void)
 {
   value_t path[UCS_GRAPH_AREA];
 
-  value_t source = UCS_XY_VALUE(1, 6);
-  value_t target = UCS_XY_VALUE(28, 1);
+  value_t source = UCS_QR_VALUE(1, 6);
+  value_t target = UCS_QR_VALUE(28, 1);
 
   ucs(&graph[0], source, &path[0]);
 
   value_t w = target;
   while (w != source) {
-    u32 w_x = w & 31;
-    u32 w_y = w / 32;
-    printf("%d %d\n", w_x, w_y);
+    u32 w_q = w & 31;
+    u32 w_r = w / 32;
+    printf("%d %d\n", w_q, w_r);
     w = path[w];
     assert(w != (u32)-1);
   }

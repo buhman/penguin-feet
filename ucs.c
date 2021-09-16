@@ -5,8 +5,8 @@
 #include "ucs.h"
 
 struct offset {
-  s16 dx;
-  s16 dy;
+  s8 dq;
+  s8 dr;
 };
 
 #define NEIGHBORS_LENGTH 4
@@ -18,8 +18,8 @@ static const struct offset neighbors[NEIGHBORS_LENGTH] = {
 };
 
 #define GRAPH_AREA UCS_GRAPH_AREA
-#define XY_VALUE UCS_XY_VALUE
-#define IN_BITMAP(bitmap, x, y) ((bitmap[y] >> x) & 1)
+#define QR_VALUE UCS_QR_VALUE
+#define IN_BITMAP(bitmap, q, r) ((bitmap[r] >> q) & 1)
 
 #ifdef PRIORITY_DEMO
 void ucs(const u32 * graph, const value_t source, value_t * path, priority_t * min_priority)
@@ -51,24 +51,24 @@ void ucs(const u32 * graph, const value_t source, value_t * path)
     priority_t u_priority;
     value_t u_value;
     min_heap_extract(&heap, &u_priority, &u_value);
-    u32 u_x = u_value & 31;
-    u32 u_y = u_value / 32;
+    u32 u_q = u_value & 31;
+    u32 u_r = u_value / 32;
 
     for (u32 i = 0; i < NEIGHBORS_LENGTH; i++) {
-      u32 v_x = u_x + neighbors[i].dx;
-      u32 v_y = u_y + neighbors[i].dy;
+      u32 v_q = u_q + neighbors[i].dq;
+      u32 v_r = u_r + neighbors[i].dr;
 
-      if (v_x < 0 || v_x > 31 || v_y < 0 || v_y > 31)
+      if (v_q < 0 || v_q > 31 || v_r < 0 || v_r > 31)
         continue;
-      if (IN_BITMAP(graph, v_x, v_y))
+      if (IN_BITMAP(graph, v_q, v_r))
         continue;
 
       priority_t v_priority = u_priority + 1;
-      value_t v_value = XY_VALUE(v_x, v_y);
+      value_t v_value = QR_VALUE(v_q, v_r);
 
-      if (!IN_BITMAP(visited, v_x, v_y)) {
+      if (!IN_BITMAP(visited, v_q, v_r)) {
         min_heap_insert(&heap, v_priority, v_value);
-        visited[v_y] |= (1 << v_x);
+        visited[v_r] |= (1 << v_q);
 
         path[v_value] = u_value;
         #ifdef PRIORITY_DEMO
