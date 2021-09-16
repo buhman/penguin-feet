@@ -14,9 +14,8 @@
 
  */
 
-u32 level_graph[1][32] __attribute__ ((section (".bss"))) = {0};
 
-void level_init(void)
+void level_init(u32 * pathable)
 {
   *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(0) + 2) = RGB15(31, 31, 31);
   *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(0) + 4) = RGB15(23, 31, 23);
@@ -46,7 +45,7 @@ void level_init(void)
         | (nib & 0x7)
         );
 
-      level_graph[0][y] |= ((nib >> 3) & 1) << x;
+      pathable[y] |= ((nib >> 3) & 1) << x;
     }
   }
 

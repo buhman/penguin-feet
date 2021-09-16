@@ -27,6 +27,7 @@ void ucs(const u32 * graph, const value_t source, value_t * path, priority_t * m
 void ucs(const u32 * graph, const value_t source, value_t * path)
 #endif
 {
+  /* /2: GRAPH_AREA is in u16 units; this writes u32 */
   for (u32 i = 0; i < (GRAPH_AREA / 2); i++) {
     ((u32 *)path)[i] = (u32)-1;
     #ifdef PRIORITY_DEMO

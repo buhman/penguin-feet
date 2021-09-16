@@ -1,1 +1,3 @@
-void level_init(void);
+#include "type.h"
+
+void level_init(u32 * pathable);

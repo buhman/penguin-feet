@@ -7,10 +7,6 @@
 #include "ucs.h"
 #include "heap.h"
 
-static_assert(UCS_GRAPH_ROWS == 32 && UCS_GRAPH_COLS == 32);
-extern u32 level_graph[1][32];
-value_t graph_path[UCS_GRAPH_AREA] __attribute__ ((section (".data")));
-
 void path_debug_init(void)
 {
   *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(1) + 2) = RGB15(0, 23, 0);
@@ -25,22 +21,14 @@ void path_debug_init(void)
             value,
             (8 * 8 / 2));
   }
-
-  /* initializes graph_path with -1 */
-  ucs((void *)0, (value_t)-1, &graph_path[0]);
 }
 
-void path_debug_update(value_t source, u32 screen)
+void path_debug_update(const value_t source, const value_t target,
+                       const u32 screen, value_t * path)
 {
   fill_16((void *)(VRAM + SCREEN_BASE_BLOCK(screen)),
           0,
           SCREEN_BASE_BLOCK_LENGTH);
-
-  value_t target = UCS_XY_VALUE(8, 8);
-
-  u32 * graph = &level_graph[0][0];
-
-  ucs(graph, source, &graph_path[0]);
 
   value_t w = target;
   while (w != (value_t)-1) {
@@ -59,6 +47,6 @@ void path_debug_update(value_t source, u32 screen)
     if (w == source)
       break;
 
-    w = graph_path[w];
+    w = path[w];
   }
 }
