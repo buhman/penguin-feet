@@ -30,6 +30,9 @@ endef
 maze_tile_%.character: maze_tile_%.data
 	python pack/character.py $< $(@D)/maze_tile.dim $@
 
+footprint_%.character: footprint_%.data
+	python pack/character.py $< $(@D)/footprint.dim $@
+
 MAZE_TILE_OBJ = character/maze_tile.palette.o
 MAZE_TILE_OBJ += character/maze_tile_CORNER_NE.character.o
 MAZE_TILE_OBJ += character/maze_tile_CROSS_NESW.character.o
@@ -48,11 +51,17 @@ BACKGROUND_OBJ += character/background.character.o
 
 LEVEL_OBJ = level/0.level.o
 
+FOOTPRINT_OBJ = character/footprint.palette.o
+FOOTPRINT_OBJ += character/footprint_east_0.character.o
+FOOTPRINT_OBJ += character/footprint_east_1.character.o
+FOOTPRINT_OBJ += character/footprint_north_0.character.o
+FOOTPRINT_OBJ += character/footprint_north_1.character.o
+
 OBJS = header.o load.o main.o palette.o tile.o copy16.o
 OBJS += path_debug.o ucs.o min_heap.o
-OBJS += level.o penguin.o graph.o
-OBJS += $(LEVEL_OBJ)
-OBJS += $(PENGUIN_OBJ)
+OBJS += level.o $(LEVEL_OBJ)
+OBJS += penguin.o $(PENGUIN_OBJ)
+OBJS += footprint.o $(FOOTPRINT_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
 	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@

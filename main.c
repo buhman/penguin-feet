@@ -10,6 +10,8 @@
 #include "graph.h"
 #include "path_debug.h"
 #include "type.h"
+#include "footprint.h"
+#include "copy16.h"
 
 #include "ucs.h"
 #include "heap.h"
@@ -151,7 +153,7 @@ void _user_isr(void)
     (void)next_w;
 
     screen = (screen == 30) ? 29 : 30;
-    path_debug_update(source, target, screen, &path[0]);
+    //path_debug_update(source, target, screen, &path[0]);
 
     u32 next_w_q = next_w & 31;
     u32 next_w_r = next_w / 32;
@@ -177,10 +179,28 @@ _end:
 void _main(void)
 {
   //maze_init();
-  level_init(&pathable[0]);
+
+  // transparency character
+  fill_16((void *)(VRAM + CHARACTER_BASE_BLOCK(0)),
+          0,
+          (8 * 8 / 2));
+
+  // screen 31
+  level_init(3, // palette
+             0, // character base block
+             0, // character offset
+             &pathable[0]
+             );
+
+  // screen 28
+  footprint_init(2,  // palette
+                 0,  // character base block
+                 16 * 8 * 8 / 2 // character offset
+                 );
+
   penguin_init();
   //background_init();
-  path_debug_init();
+  path_debug_init(); // palette 1, screen 30+29
 
   /* initialize graph_path with -1 */
   ucs((void *)0, (value_t)-1, &path[0]);
@@ -190,7 +210,7 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(0)
     | BG_CNT__SCREEN_BASE_BLOCK(31)
-    | BG_CNT__PRIORITY(1)
+    | BG_CNT__PRIORITY(2)
     );
 
   *(volatile u16 *)(IO_REG + BG1CNT) =
@@ -201,9 +221,17 @@ void _main(void)
     | BG_CNT__PRIORITY(0)
     );
 
+  *(volatile u16 *)(IO_REG + BG2CNT) =
+    ( BG_CNT__COLOR_16_16
+    | BG_CNT__SCREEN_SIZE(0)
+    | BG_CNT__CHARACTER_BASE_BLOCK(0)
+    | BG_CNT__SCREEN_BASE_BLOCK(28)
+    | BG_CNT__PRIORITY(1)
+    );
+
   *(volatile u16 *)(IO_REG + DISPCNT) =
     ( DISPCNT__BG0
-    | DISPCNT__BG1
+    | DISPCNT__BG2
     | DISPCNT__OBJ
     | DISPCNT__OBJ_1_DIMENSION
     | DISPCNT__BG_MODE_0
