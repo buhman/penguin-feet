@@ -3,17 +3,17 @@
 
 #include "copy16.h"
 #include "background.h"
-#include "background_image.h"
+#include "character/background.h"
 
 void background_init(void)
 {
   copy_16((void *)(PRAM_BG + PRAM_PALETTE(1)),
-          (void *)&_binary_image_background_palette_start,
-          (unsigned int)&_binary_image_background_palette_size);
+          (void *)&_binary_character_background_palette_start,
+          (unsigned int)&_binary_character_background_palette_size);
 
   copy_16((void *)(VRAM + CHARACTER_BASE_BLOCK(1) + 32),
-          (void *)&_binary_image_background_character_start,
-          (unsigned int)&_binary_image_background_character_size);
+          (void *)&_binary_character_background_character_start,
+          (unsigned int)&_binary_character_background_character_size);
 
   for (int y = 0; y < 20; y++) {
     for (int x = 0; x < 30; x++) {

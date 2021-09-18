@@ -3,17 +3,17 @@
 
 #include "copy16.h"
 #include "penguin.h"
-#include "penguin_image.h"
+#include "character/penguin.h"
 
 void penguin_init(void)
 {
   copy_16((void *)(PRAM_OBJ + PRAM_PALETTE(0)),
-          (void *)&_binary_image_penguin_palette_start,
-          (unsigned int)&_binary_image_penguin_palette_size);
+          (void *)&_binary_character_penguin_palette_start,
+          (unsigned int)&_binary_character_penguin_palette_size);
 
   copy_16((void *)(VRAM_OBJ + 32),
-          (void *)&_binary_image_penguin_character_start,
-          (unsigned int)&_binary_image_penguin_character_size);
+          (void *)&_binary_character_penguin_character_start,
+          (unsigned int)&_binary_character_penguin_character_size);
 
   *(volatile unsigned short *)(OAM + OAM_OBJ_ATTRIBUTE(0, 0)) =
     ( OBJ_A0__SHAPE_SQUARE

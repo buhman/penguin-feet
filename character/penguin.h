@@ -1,0 +1,5 @@
+extern unsigned int _binary_character_penguin_palette_start;
+extern unsigned int _binary_character_penguin_palette_size;
+
+extern unsigned int _binary_character_penguin_character_start;
+extern unsigned int _binary_character_penguin_character_size;

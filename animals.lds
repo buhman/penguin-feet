@@ -54,7 +54,7 @@ SECTIONS
 
   rom.image : ALIGN(4) SUBALIGN(4)
   {
-    *(.data.image*)
+    *(.data.character*)
     *(.data.level*)
   } > gprom
 }

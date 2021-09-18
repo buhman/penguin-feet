@@ -2,7 +2,7 @@
 #include "register.h"
 #include "character.h"
 
-#include "maze_image.h"
+#include "character/maze.h"
 #include "copy16.h"
 
 #define V_FLIP (1 << 6)
@@ -319,36 +319,36 @@ static const unsigned char maze_cells[MAZE_ROWS][MAZE_COLUMNS] = {
 
 static const character_t characters[] = {
   [CORNER_NE] = {
-    (void *)&_binary_image_maze_tile_CORNER_NE_character_start,
-    (unsigned int)&_binary_image_maze_tile_CORNER_NE_character_size,
+    (void *)&_binary_character_maze_tile_CORNER_NE_character_start,
+    (unsigned int)&_binary_character_maze_tile_CORNER_NE_character_size,
   },
   [CROSS_NESW] = {
-    (void *)&_binary_image_maze_tile_CROSS_NESW_character_start,
-    (unsigned int)&_binary_image_maze_tile_CROSS_NESW_character_size,
+    (void *)&_binary_character_maze_tile_CROSS_NESW_character_start,
+    (unsigned int)&_binary_character_maze_tile_CROSS_NESW_character_size,
   },
   [END_S] = {
-    (void *)&_binary_image_maze_tile_END_S_character_start,
-    (unsigned int)&_binary_image_maze_tile_END_S_character_size,
+    (void *)&_binary_character_maze_tile_END_S_character_start,
+    (unsigned int)&_binary_character_maze_tile_END_S_character_size,
   },
   [END_W] = {
-    (void *)&_binary_image_maze_tile_END_W_character_start,
-    (unsigned int)&_binary_image_maze_tile_END_W_character_size,
+    (void *)&_binary_character_maze_tile_END_W_character_start,
+    (unsigned int)&_binary_character_maze_tile_END_W_character_size,
   },
   [LINE_NS] = {
-    (void *)&_binary_image_maze_tile_LINE_NS_character_start,
-    (unsigned int)&_binary_image_maze_tile_LINE_NS_character_size,
+    (void *)&_binary_character_maze_tile_LINE_NS_character_start,
+    (unsigned int)&_binary_character_maze_tile_LINE_NS_character_size,
   },
   [LINE_WE] = {
-    (void *)&_binary_image_maze_tile_LINE_WE_character_start,
-    (unsigned int)&_binary_image_maze_tile_LINE_WE_character_size,
+    (void *)&_binary_character_maze_tile_LINE_WE_character_start,
+    (unsigned int)&_binary_character_maze_tile_LINE_WE_character_size,
   },
   [TEE_NES] = {
-    (void *)&_binary_image_maze_tile_TEE_NES_character_start,
-    (unsigned int)&_binary_image_maze_tile_TEE_NES_character_size,
+    (void *)&_binary_character_maze_tile_TEE_NES_character_start,
+    (unsigned int)&_binary_character_maze_tile_TEE_NES_character_size,
   },
   [TEE_WNE] = {
-    (void *)&_binary_image_maze_tile_TEE_WNE_character_start,
-    (unsigned int)&_binary_image_maze_tile_TEE_WNE_character_size,
+    (void *)&_binary_character_maze_tile_TEE_WNE_character_start,
+    (unsigned int)&_binary_character_maze_tile_TEE_WNE_character_size,
   },
 };
 #define CHARACTERS_LENGTH ((sizeof (characters)) / (sizeof (character_t)))
@@ -357,8 +357,8 @@ static const character_t characters[] = {
 void maze_init(void)
 {
   copy_16((void *)(PRAM_BG + PRAM_PALETTE(0)),
-          (void *)&_binary_image_maze_tile_palette_start,
-          (unsigned int)&_binary_image_maze_tile_palette_size);
+          (void *)&_binary_character_maze_tile_palette_start,
+          (unsigned int)&_binary_character_maze_tile_palette_size);
 
   for (int i = 1; i < CHARACTERS_LENGTH; i++) {
     copy_16((void *)(VRAM + CHARACTER_BASE_BLOCK(0) + (i * 32)),

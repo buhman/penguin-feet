@@ -1,0 +1,26 @@
+extern unsigned int _binary_character_maze_tile_palette_start;
+extern unsigned int _binary_character_maze_tile_palette_size;
+
+extern unsigned int _binary_character_maze_tile_CORNER_NE_character_start;
+extern unsigned int _binary_character_maze_tile_CORNER_NE_character_size;
+
+extern unsigned int _binary_character_maze_tile_CROSS_NESW_character_start;
+extern unsigned int _binary_character_maze_tile_CROSS_NESW_character_size;
+
+extern unsigned int _binary_character_maze_tile_END_S_character_start;
+extern unsigned int _binary_character_maze_tile_END_S_character_size;
+
+extern unsigned int _binary_character_maze_tile_END_W_character_start;
+extern unsigned int _binary_character_maze_tile_END_W_character_size;
+
+extern unsigned int _binary_character_maze_tile_LINE_NS_character_start;
+extern unsigned int _binary_character_maze_tile_LINE_NS_character_size;
+
+extern unsigned int _binary_character_maze_tile_LINE_WE_character_start;
+extern unsigned int _binary_character_maze_tile_LINE_WE_character_size;
+
+extern unsigned int _binary_character_maze_tile_TEE_NES_character_start;
+extern unsigned int _binary_character_maze_tile_TEE_NES_character_size;
+
+extern unsigned int _binary_character_maze_tile_TEE_WNE_character_start;
+extern unsigned int _binary_character_maze_tile_TEE_WNE_character_size;

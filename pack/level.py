@@ -22,8 +22,8 @@ def graph_nbit(data: bytes, nbits: int) -> list[int]:
         assert b in not_pathable, (i, b)
         np = int(not_pathable[b])
         nib = (np << 3) | (b & 0x7)
-        print(i % 32, i // 32, (i * nbits) // 32, ((i * nbits) % 32))
-        print(" ", bin((nib << ((i * nbits) % 32))))
+        #print(i % 32, i // 32, (i * nbits) // 32, ((i * nbits) % 32))
+        #print(" ", bin((nib << ((i * nbits) % 32))))
         graph[(i * nbits) // 32] |= (nib << ((i * nbits) % 32))
 
     return graph
