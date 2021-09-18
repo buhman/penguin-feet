@@ -1,0 +1,12 @@
+extern unsigned int _binary_character_footprint_palette_start;
+extern unsigned int _binary_character_footprint_palette_size;
+
+extern unsigned int _binary_character_footprint_north_0_character_start;
+extern unsigned int _binary_character_footprint_north_0_character_size;
+extern unsigned int _binary_character_footprint_north_1_character_start;
+extern unsigned int _binary_character_footprint_north_1_character_size;
+
+extern unsigned int _binary_character_footprint_east_0_character_start;
+extern unsigned int _binary_character_footprint_east_0_character_size;
+extern unsigned int _binary_character_footprint_east_1_character_start;
+extern unsigned int _binary_character_footprint_east_1_character_size;
