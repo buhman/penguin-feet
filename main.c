@@ -18,6 +18,8 @@
 
 static value_t path[UCS_GRAPH_AREA];
 static u32 pathable[32];
+static u32 visited[32];
+static u32 unvisited_count;
 
 #define DPAD_RIGHT KEYCNT__INPUT_RIGHT
 #define DPAD_LEFT  KEYCNT__INPUT_LEFT
@@ -77,6 +79,13 @@ static u8 screen = 30;
       _a.target.r = r3;                                       \
     }                                                         \
   }
+
+static void next_level(void)
+{
+  level_init(&pathable[0]);
+  level_counter_init(&pathable[0], &visited[0], &unvisited_count);
+  footprint_init();
+}
 
 void _user_isr(void)
 {
@@ -143,6 +152,8 @@ void _user_isr(void)
 
   value_t target = UCS_QR_VALUE(penguin.target.q, penguin.target.r);
 
+  s32 dq;
+  s32 dr;
   {
     value_t w = target;
     value_t next_w = target;
@@ -153,19 +164,36 @@ void _user_isr(void)
     (void)next_w;
 
     screen = (screen == 30) ? 29 : 30;
-    //path_debug_update(source, target, screen, &path[0]);
+    path_debug_update(source, target, screen, &path[0]);
 
     u32 next_w_q = next_w & 31;
     u32 next_w_r = next_w / 32;
 
-    s32 dq = next_w_q - penguin_q;
-    s32 dr = next_w_r - penguin_r;
+    dq = next_w_q - penguin_q;
+    dr = next_w_r - penguin_r;
     penguin.neg.q = (dq < 0);
     penguin.neg.r = (dr < 0);
     penguin.x += dq;
     penguin.y += dr;
 
     penguin_update(penguin.x, penguin.y);
+  }
+
+  {
+    if ((dq != 0 || dr != 0) && (penguin.x & 0b111) == 0 && (penguin.y & 0b111) == 0) {
+      const s32 dir = dr < 0 ? 0 : // NORTH
+                      dq > 0 ? 1 : // EAST
+                      dr > 0 ? 2 : // SOUTH
+                      3;           // WEST
+
+      const u32 _q = penguin.x >> 3;
+      const u32 _r = penguin.y >> 3;
+      footprint_place(_q, _r, dir);
+      level_counter_decrement(_q, _r, &visited[0], &unvisited_count);
+
+      if (unvisited_count == 0)
+        next_level();
+    }
   }
 
   /* */
@@ -185,18 +213,7 @@ void _main(void)
           0,
           (8 * 8 / 2));
 
-  // screen 31
-  level_init(3, // palette
-             0, // character base block
-             0, // character offset
-             &pathable[0]
-             );
-
-  // screen 28
-  footprint_init(2,  // palette
-                 0,  // character base block
-                 16 * 8 * 8 / 2 // character offset
-                 );
+  next_level();
 
   penguin_init();
   //background_init();
@@ -208,8 +225,8 @@ void _main(void)
   *(volatile u16 *)(IO_REG + BG0CNT) =
     ( BG_CNT__COLOR_16_16
     | BG_CNT__SCREEN_SIZE(0)
-    | BG_CNT__CHARACTER_BASE_BLOCK(0)
-    | BG_CNT__SCREEN_BASE_BLOCK(31)
+    | BG_CNT__CHARACTER_BASE_BLOCK(LEVEL_CHARACTER_BASE_BLOCK)
+    | BG_CNT__SCREEN_BASE_BLOCK(LEVEL_SCREEN_BASE_BLOCK)
     | BG_CNT__PRIORITY(2)
     );
 
@@ -224,13 +241,14 @@ void _main(void)
   *(volatile u16 *)(IO_REG + BG2CNT) =
     ( BG_CNT__COLOR_16_16
     | BG_CNT__SCREEN_SIZE(0)
-    | BG_CNT__CHARACTER_BASE_BLOCK(0)
-    | BG_CNT__SCREEN_BASE_BLOCK(28)
+    | BG_CNT__CHARACTER_BASE_BLOCK(FOOTPRINT_CHARACTER_BASE_BLOCK)
+    | BG_CNT__SCREEN_BASE_BLOCK(FOOTPRINT_SCREEN_BASE_BLOCK)
     | BG_CNT__PRIORITY(1)
     );
 
   *(volatile u16 *)(IO_REG + DISPCNT) =
     ( DISPCNT__BG0
+    | DISPCNT__BG1
     | DISPCNT__BG2
     | DISPCNT__OBJ
     | DISPCNT__OBJ_1_DIMENSION
