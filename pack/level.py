@@ -1,27 +1,36 @@
 import sys
+from collections import defaultdict
 from itertools import islice, repeat
 import struct
 
 
-not_pathable = {
+not_pathable = defaultdict(lambda: True, {
     0: False, # white
-    1: True,  # green
-    2: True,  # black
-    3: True,  # grey
-}
+    1: False, # yellow
+})
 
-reserved_bits = 1
+trackable = defaultdict(lambda: False, {
+    0: True,  # white
+    3: True,  # teal
+})
+
+reserved_bits = 2
 
 def graph_nbit(data: bytes, nbits: int) -> list[int]:
     graph = list(islice(repeat(0), 32 * nbits))
 
-    assert len(data) == (32 * 32), len(data)
+    assert len(data) == (32 * 32 * 2), len(data)
 
     for i, b in enumerate(data):
-        assert b < (2 ** (nbits - reserved_bits))
-        assert b in not_pathable, (i, b)
+        if i % 2 != 0:
+            assert(b == 0xff)
+            continue
+        i = i // 2
+
+        #assert b < (2 ** (nbits - reserved_bits)), (b, (2 ** (nbits - reserved_bits)))
         np = int(not_pathable[b])
-        nib = (np << 3) | (b & 0x7)
+        tr = int(trackable[b])
+        nib = (np << 3) | (tr << 2) | (b & 0x3)
         #print(i % 32, i // 32, (i * nbits) // 32, ((i * nbits) % 32))
         #print(" ", bin((nib << ((i * nbits) % 32))))
         graph[(i * nbits) // 32] |= (nib << ((i * nbits) % 32))

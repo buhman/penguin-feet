@@ -132,12 +132,16 @@ static u16 value[4][4] = {
 
 #define SCREEN_BASE (VRAM + SCREEN_BASE_BLOCK(FOOTPRINT_SCREEN_BASE_BLOCK))
 
-void footprint_place(const u32 q, const u32 r, const u32 dir)
+void footprint_place(const u32 * printable, const u32 q, const u32 r, const u32 dir)
 {
   u32 qa = q * 2;
   u32 ra = r * 2;
-  *(volatile u16 *)(SCREEN_BASE + ((ra + 0) * 32 + qa + 0)) = value[dir][0];
-  *(volatile u16 *)(SCREEN_BASE + ((ra + 0) * 32 + qa + 2)) = value[dir][1];
-  *(volatile u16 *)(SCREEN_BASE + ((ra + 2) * 32 + qa + 0)) = value[dir][2];
-  *(volatile u16 *)(SCREEN_BASE + ((ra + 2) * 32 + qa + 2)) = value[dir][3];
+  if ((printable[r + 0] >> (q + 0)) & 1)
+    *(volatile u16 *)(SCREEN_BASE + ((ra + 0) * 32 + qa + 0)) = value[dir][0];
+  if ((printable[r + 0] >> (q + 1)) & 1)
+    *(volatile u16 *)(SCREEN_BASE + ((ra + 0) * 32 + qa + 2)) = value[dir][1];
+  if ((printable[r + 1] >> (q + 0)) & 1)
+    *(volatile u16 *)(SCREEN_BASE + ((ra + 2) * 32 + qa + 0)) = value[dir][2];
+  if ((printable[r + 1] >> (q + 1)) & 1)
+    *(volatile u16 *)(SCREEN_BASE + ((ra + 2) * 32 + qa + 2)) = value[dir][3];
 }

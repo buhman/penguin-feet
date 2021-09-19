@@ -50,6 +50,7 @@ BACKGROUND_OBJ = character/background.palette.o
 BACKGROUND_OBJ += character/background.character.o
 
 LEVEL_OBJ = level/0.level.o
+LEVEL_OBJ += level/1.level.o
 
 FOOTPRINT_OBJ = character/footprint.palette.o
 FOOTPRINT_OBJ += character/footprint_east_0.character.o

@@ -3,8 +3,9 @@
 #include "copy16.h"
 #include "type.h"
 #include "color.h"
-#include "level/0.level.h"
+#include "level/level.h"
 #include "assert.h"
+#include "character.h"
 
 #include "level.h"
 
@@ -20,12 +21,24 @@
 
 #define CHARACTERS 4
 
-void level_init(u32 * pathable)
+static const character_t levels[] = {
+  [0] = {
+    (void *)&_binary_level_0_level_start,
+    (u32)&_binary_level_0_level_size,
+  },
+  [1] = {
+    (void *)&_binary_level_1_level_start,
+    (u32)&_binary_level_1_level_size,
+  },
+};
+
+void level_init(const u32 level, u32 * pathable, u32 * printable)
 {
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 2) = RGB15(31, 31, 31);
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 4) = RGB15(23, 31, 23);
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 6) = RGB15(4, 4, 4);
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 8) = RGB15(15, 15, 15);
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 2) = RGB15(31, 31, 31); // white
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 4) = RGB15(31, 30, 20); // yellow
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 6) = RGB15(23, 31, 23); // green
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 8) = RGB15( 0, 22, 24);  // teal
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 10) = RGB15( 4, 4, 4); // black
 
   for (u32 i = 1; i < CHARACTERS + 1; i++) {
     u16 value = i;
@@ -39,7 +52,7 @@ void level_init(u32 * pathable)
   }
 
   for (u32 r = 0; r < (32 * 4); r++) {
-    u32 v = ((u32 *)(&_binary_level_0_level_start))[r];
+    u32 v = ((u32 *)(levels[level].start))[r];
 
     u32 y = (r / 4);
     u32 y32 = y * 32;
@@ -50,20 +63,20 @@ void level_init(u32 * pathable)
 
       ((volatile u16 *)(VRAM + SCREEN_BASE_BLOCK(LEVEL_SCREEN_BASE_BLOCK)))[y32 + x] =
         ( SCREEN_TEXT__PALETTE(LEVEL_PALETTE)
-        | ((nib + 1) & 0x7)
+        | ((nib & 0xf) == 0b1001 ? 5 : ((nib & 0x3) + 1))
         );
 
       pathable[y] |= ((nib >> 3) & 1) << x;
+      printable[y] |= ((nib >> 2) & 1) << x;
     }
   }
-
 }
 
-void level_counter_init(const u32 * pathable, u32 * visited, u32 * unvisited_count)
+void level_counter_init(const u32 * printable, u32 * visited, u32 * unvisited_count)
 {
   u32 unvisited = 0;
   for (u32 i = 0; i < 32; i++) {
-    u32 row = pathable[i];
+    u32 row = ~(printable[i]);
     visited[i] = row;
     for (u32 j = 0; j < 32; j++) {
       if (((row >> j) & 1) == 0) unvisited++;

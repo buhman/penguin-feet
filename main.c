@@ -18,6 +18,7 @@
 
 static value_t path[UCS_GRAPH_AREA];
 static u32 pathable[32];
+static u32 printable[32];
 static u32 visited[32];
 static u32 unvisited_count;
 
@@ -82,10 +83,11 @@ static u8 screen = 30;
 
 static void next_level(void)
 {
-  level_init(&pathable[0]);
-  level_counter_init(&pathable[0], &visited[0], &unvisited_count);
+  level_init(1, &pathable[0], &printable[0]);
+  level_counter_init(&printable[0], &visited[0], &unvisited_count);
   footprint_init();
 }
+
 
 void _user_isr(void)
 {
@@ -188,7 +190,7 @@ void _user_isr(void)
 
       const u32 _q = penguin.x >> 3;
       const u32 _r = penguin.y >> 3;
-      footprint_place(_q, _r, dir);
+      footprint_place(&printable[0], _q, _r, dir);
       level_counter_decrement(_q, _r, &visited[0], &unvisited_count);
 
       if (unvisited_count == 0)
