@@ -56,5 +56,6 @@ SECTIONS
   {
     *(.data.character*)
     *(.data.level*)
+    *(.data.music*)
   } > gprom
 }

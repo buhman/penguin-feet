@@ -1,0 +1,6 @@
+Passacaglia (Public Domain)
+  Arrangement by Handel + Halvorsen
+  Translated to "dfreq" by pack/score.py
+
+  - passacaglia_voice_1.dfreq
+  - passacaglia_voice_2.dfreq

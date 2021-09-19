@@ -13,6 +13,7 @@
 #include "footprint.h"
 #include "copy16.h"
 #include "log.h"
+#include "music.h"
 
 #include "ucs.h"
 #include "heap.h"
@@ -95,6 +96,7 @@ void _user_isr(void)
   *(volatile u16 *)(IO_REG + IME) = 0;
 
   log_rotate_step();
+  music_step();
 
   /* */
 
@@ -224,6 +226,8 @@ void _main(void)
   log_init();
   //background_init();
   path_debug_init(); // palette 1, screen 30+29
+
+  music_init();
 
   /* initialize graph_path with -1 */
   ucs((void *)0, (value_t)-1, &path[0]);
