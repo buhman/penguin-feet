@@ -67,7 +67,7 @@ LOG_OBJ += character/log.character.o
 MUSIC_OBJ = music/passacaglia_voice_0.dfreq.o
 MUSIC_OBJ += music/passacaglia_voice_1.dfreq.o
 
-OBJS = header.o load.o main.o palette.o tile.o copy16.o
+OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o
 OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o $(LEVEL_OBJ)
 OBJS += penguin.o $(PENGUIN_OBJ)

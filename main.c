@@ -14,6 +14,7 @@
 #include "copy16.h"
 #include "log.h"
 #include "music.h"
+#include "interactable.h"
 
 #include "ucs.h"
 #include "heap.h"
@@ -95,7 +96,7 @@ void _user_isr(void)
 {
   *(volatile u16 *)(IO_REG + IME) = 0;
 
-  log_rotate_step();
+  log_step();
   //music_step();
 
   /* */
@@ -198,6 +199,8 @@ void _user_isr(void)
       footprint_place(&printable[0], _q, _r, dir);
       level_counter_decrement(_q, _r, &visited[0], &unvisited_count);
 
+      interactable_call(_q, _r);
+
       if (unvisited_count == 0)
         next_level();
     }
@@ -228,6 +231,7 @@ void _main(void)
   path_debug_init(); // palette 1, screen 30+29
 
   //music_init();
+  interactable_init();
 
   /* initialize graph_path with -1 */
   ucs((void *)0, (value_t)-1, &path[0]);
