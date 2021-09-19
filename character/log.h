@@ -1,0 +1,5 @@
+extern unsigned int _binary_character_log_palette_start;
+extern unsigned int _binary_character_log_palette_size;
+
+extern unsigned int _binary_character_log_character_start;
+extern unsigned int _binary_character_log_character_size;

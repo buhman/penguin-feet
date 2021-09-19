@@ -58,11 +58,15 @@ FOOTPRINT_OBJ += character/footprint_east_1.character.o
 FOOTPRINT_OBJ += character/footprint_north_0.character.o
 FOOTPRINT_OBJ += character/footprint_north_1.character.o
 
+LOG_OBJ = character/log.palette.o
+LOG_OBJ += character/log.character.o
+
 OBJS = header.o load.o main.o palette.o tile.o copy16.o
 OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o $(LEVEL_OBJ)
 OBJS += penguin.o $(PENGUIN_OBJ)
 OBJS += footprint.o $(FOOTPRINT_OBJ)
+OBJS += log.o $(LOG_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
 	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@

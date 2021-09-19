@@ -40,8 +40,8 @@
 /* OAM */
 
 #define OAM_OBJ_ATTRIBUTE(n, a) (n * 8 + a * 2)
-#define OAM_OBJ__DX  (0) // PA
-#define OAM_OBJ__DMX (1) // PB
-#define OAM_OBJ__DY  (2) // PC
-#define OAM_OBJ__DMY (3) // PD
+#define OAM_OBJ__PA (0) // DX   (1/a)*cos(t)
+#define OAM_OBJ__PB (1) // DMX  (1/a)*sin(t)
+#define OAM_OBJ__PC (2) // DY  -(1/b)*sin(t)
+#define OAM_OBJ__PD (3) // DMY  (1/b)*cos(t)
 #define OAM_OBJ_ROTATION_SCALING(n, p) ((n * 8 * 4) + (p * 8) + 6)

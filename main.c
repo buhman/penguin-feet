@@ -12,6 +12,7 @@
 #include "type.h"
 #include "footprint.h"
 #include "copy16.h"
+#include "log.h"
 
 #include "ucs.h"
 #include "heap.h"
@@ -92,6 +93,8 @@ static void next_level(void)
 void _user_isr(void)
 {
   *(volatile u16 *)(IO_REG + IME) = 0;
+
+  log_rotate_step();
 
   /* */
 
@@ -218,6 +221,7 @@ void _main(void)
   next_level();
 
   penguin_init();
+  log_init();
   //background_init();
   path_debug_init(); // palette 1, screen 30+29
 
