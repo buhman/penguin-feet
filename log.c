@@ -72,7 +72,7 @@ void log_init(void)
     | OBJ_A0__MODE_NORMAL
     | OBJ_A0__DOUBLE_SIZE
     | OBJ_A0__ROTATION_SCALING
-    | OBJ_A0__Y_COORDINATE(ORIGIN_Y - 9)
+    | OBJ_A0__Y_COORDINATE(ORIGIN_Y)
     );
 
   *(volatile u16 *)(OAM + OAM_OBJ_ATTRIBUTE(16, 1)) =
@@ -94,15 +94,22 @@ void log_init(void)
   *(volatile s16 *)(OAM + OAM_OBJ_ROTATION_SCALING(0, OAM_OBJ__PD)) = 256;
 }
 
+static u8 _step = 0;
+static s8 state_dir = 1;
+
 void log_rotate_step(void)
 {
-  u32 step8 = (step >> 5) & 0x7;
+  if (++_step == 16) {
+    _step = 0;
+  } else return;
 
-  u32 next_state = (state + 1) & 3;
+  step = (step + 1) & 7;
+
+  u32 next_state = (state + state_dir) & 3;
   s32 offset_x = affine7_offsets[state][0];
   s32 offset_y = affine7_offsets[state][1];
-  s32 lerp_x = ((affine7_offsets[next_state][0] - offset_x) * step8) / 8;
-  s32 lerp_y = ((affine7_offsets[next_state][1] - offset_y) * step8) / 8;
+  s32 lerp_x = ((affine7_offsets[next_state][0] - offset_x) * step) / 8;
+  s32 lerp_y = ((affine7_offsets[next_state][1] - offset_y) * step) / 8;
 
   *(volatile u16 *)(OAM + OAM_OBJ_ATTRIBUTE(16, 0)) =
     ( OBJ_A0__SHAPE_SQUARE
@@ -123,7 +130,7 @@ void log_rotate_step(void)
      DX  cos(t) DY -sin(t)
      DMX sin(t) DMY cos(t)
    */
-  u32 theta = state * 8 + step8;
+  u32 theta = state * 8 + (step * state_dir);
   s32 s = _sin32(theta);
   s32 c = _cos32(theta);
 
@@ -134,7 +141,6 @@ void log_rotate_step(void)
 
   //
 
-  if (step == 255)
+  if (step == 7)
     state = next_state;
-  step++;
 }

@@ -73,7 +73,7 @@ OBJS += level.o $(LEVEL_OBJ)
 OBJS += penguin.o $(PENGUIN_OBJ)
 OBJS += footprint.o $(FOOTPRINT_OBJ)
 OBJS += log.o $(LOG_OBJ)
-OBJS += music.o $(MUSIC_OBJ)
+#OBJS += music.o $(MUSIC_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
 	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@
