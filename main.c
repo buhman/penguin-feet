@@ -21,6 +21,7 @@
 
 static value_t path[UCS_GRAPH_AREA];
 static u32 pathable[32];
+static u8 interactable[32 * 32];
 static u32 printable[32];
 static u32 visited[32];
 static u32 unvisited_count;
@@ -48,10 +49,10 @@ typedef struct {
 } actor_t;
 
 static actor_t penguin = {
-  .x = 4 * 8,
-  .y = 9 * 8,
-  .target.q = 4,
-  .target.r = 9,
+  .x = 11 * 8,
+  .y = 13 * 8,
+  .target.q = 11,
+  .target.r = 13,
   .neg.q = 0,
   .neg.r = 0,
 };
@@ -89,6 +90,9 @@ static void next_level(void)
   level_init(1, &pathable[0], &printable[0]);
   level_counter_init(&printable[0], &visited[0], &unvisited_count);
   footprint_init();
+  interactable_init(&pathable[0], &interactable[0]);
+  log_init(&pathable[0], &interactable[0]);
+  penguin_init();
 }
 
 
@@ -96,7 +100,7 @@ void _user_isr(void)
 {
   *(volatile u16 *)(IO_REG + IME) = 0;
 
-  log_step();
+  log_step(&pathable[0], &interactable[0]);
   //music_step();
 
   /* */
@@ -119,15 +123,17 @@ void _user_isr(void)
   value_t source = UCS_QR_VALUE(penguin_q, penguin_r);
   ucs(&pathable[0], source, &path[0]);
 
+  s8 dx;
+  s8 dy;
   {
     u8 xz = (penguin.x & 0b111) == 0;
     u8 yz = (penguin.y & 0b111) == 0;
-    s8 dx = yz
-          ? ((key_input & KEYCNT__INPUT_LEFT) ? -1 : 0) + ((key_input & KEYCNT__INPUT_RIGHT) ? 1 : 0)
-          : 0;
-    s8 dy = xz
-          ? ((key_input & KEYCNT__INPUT_UP) ? -1 : 0) + ((key_input & KEYCNT__INPUT_DOWN) ? 1 : 0)
-          : 0;
+    dx = yz
+       ? ((key_input & KEYCNT__INPUT_LEFT) ? -1 : 0) + ((key_input & KEYCNT__INPUT_RIGHT) ? 1 : 0)
+       : 0;
+    dy = xz
+       ? ((key_input & KEYCNT__INPUT_UP) ? -1 : 0) + ((key_input & KEYCNT__INPUT_DOWN) ? 1 : 0)
+       : 0;
 
     if (dx != 0 && dy != 0) {
       /*  ___
@@ -199,10 +205,15 @@ void _user_isr(void)
       footprint_place(&printable[0], _q, _r, dir);
       level_counter_decrement(_q, _r, &visited[0], &unvisited_count);
 
-      interactable_call(_q, _r);
-
       if (unvisited_count == 0)
         next_level();
+    } else if ((dx != 0 || dy != 0) && (!dx != !dy)) {
+      const u32 _q = penguin_q + dx;
+      const u32 _r = penguin_r + dy;
+      if (IN_BOUNDS(_q, _r)) {
+        // we tried to move, but hit a wall; there might be an interactable here
+        interactable_call(penguin_q + dx, penguin_r + dy, &interactable[0]);
+      }
     }
   }
 
@@ -225,13 +236,10 @@ void _main(void)
 
   next_level();
 
-  penguin_init();
-  log_init();
   //background_init();
   path_debug_init(); // palette 1, screen 30+29
 
   //music_init();
-  interactable_init();
 
   /* initialize graph_path with -1 */
   ucs((void *)0, (value_t)-1, &path[0]);
