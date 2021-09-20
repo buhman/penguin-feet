@@ -10,6 +10,13 @@ void _user_isr(void)
 {
   *(volatile u16 *)(IO_REG + IME) = 0;
 
+  *(volatile u16 *)(IO_REG + SOUND4_CNT_H) =
+    ( SOUND4_CNT_H__RESTART
+    // | SOUND4_CNT_H__SOUND_LENGTH
+    | SOUND4_CNT_H__COUNTER_SHIFT_FREQ(1) // 15
+    //| SOUND4_CNT_H__COUNTER_7_STEP
+    | SOUND4_CNT_H__COUNTER_PRESCALAR(4) // 7
+    );
 
   *(volatile u16 *)(IO_REG + IF) = IE__TIMER_0;
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
@@ -56,7 +63,7 @@ void _main(void)
 
   *(volatile u16 *)(IO_REG + SOUND1_CNT_X) =
     ( SOUND1_CNT_X__FREQUENCY_DATA(1750)
-    | SOUND1_CNT_X__RESTART
+    //| SOUND1_CNT_X__RESTART
     );
 
   /* */
@@ -85,19 +92,35 @@ void _main(void)
 
   *(volatile u16 *)(IO_REG + SOUND3_CNT_X) =
     ( SOUND3_CNT_X__FREQUNCY_DATA(1750)
-      | SOUND3_CNT_X__RESTART
+    //| SOUND3_CNT_X__RESTART
+    );
+
+  /* */
+
+  *(volatile u16 *)(IO_REG + SOUND4_CNT_L) =
+    ( SOUND4_CNT_L__ENVELOPE_VALUE(15)
+    | SOUND4_CNT_L__ENVELOPE_STEPS(1)
+    | SOUND4_CNT_L__SOUND_LENGTH(30)
+    );
+
+  *(volatile u16 *)(IO_REG + SOUND4_CNT_H) =
+    ( 0//SOUND4_CNT_H__RESTART
+    | SOUND4_CNT_H__SOUND_LENGTH
+    | SOUND4_CNT_H__COUNTER_SHIFT_FREQ(1) // 15
+    //| SOUND4_CNT_H__COUNTER_7_STEP
+    | SOUND4_CNT_H__COUNTER_PRESCALAR(4) // 7
     );
 
   /* */
 
   *(volatile u32 *)(IWRAM_USER_ISR) = (u32)(&_user_isr);
 
-  *(volatile u16 *)(IO_REG + TM0CNT_L) = (u16)-400;
+  *(volatile u16 *)(IO_REG + TM0CNT_L) = (u16)44300;
 
   *(volatile u16 *)(IO_REG + TM0CNT_H) =
     ( TM_CNT_H__ENABLE
     | TM_CNT_H__INT_ENABLE
-    | TM_CNT_H__PRESCALAR_64
+    | TM_CNT_H__PRESCALAR_256
     );
   *(volatile u16 *)(IO_REG + IE) = IE__TIMER_0;
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
