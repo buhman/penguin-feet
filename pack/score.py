@@ -23,6 +23,7 @@ frequencies = {
     "A#2": 116.54,
     "Bb2": 116.54,
     "B2": 123.47,
+    "Cb3": 123.47,
     "C3": 130.81,
     "C#3": 138.59,
     "Db3": 138.59,
@@ -40,6 +41,7 @@ frequencies = {
     "A#3": 233.08,
     "Bb3": 233.08,
     "B3": 246.94,
+    "Cb4": 246.94,
     "C4": 261.63,
     "C#4": 277.18,
     "Db4": 277.18,
@@ -57,6 +59,7 @@ frequencies = {
     "A#4": 466.16,
     "Bb4": 466.16,
     "B4": 493.88,
+    "Cb5": 493.88,
     "C5": 523.25,
     "C#5": 554.37,
     "Db5": 554.37,
@@ -74,6 +77,7 @@ frequencies = {
     "A#5": 932.33,
     "Bb5": 932.33,
     "B5": 987.77,
+    "Cb6": 987.77,
     "C6": 1046.50,
     "C#6": 1108.73,
     "Db6": 1108.73,
@@ -91,6 +95,7 @@ frequencies = {
     "A#6": 1864.66,
     "Bb6": 1864.66,
     "B6": 1975.53,
+    "Cb7": 1975.53,
     "C7": 2093.00,
     "C#7": 2217.46,
     "Db7": 2217.46,
@@ -108,6 +113,7 @@ frequencies = {
     "A#7": 3729.31,
     "Bb7": 3729.31,
     "B7": 3951.07,
+    "Cb8": 3951.07,
     "C8": 4186.01,
     "C#8": 4434.92,
     "Db8": 4434.92,
@@ -146,17 +152,17 @@ def parse_note(note, x_offset):
     voice = int(note.xpath('./voice/text()')[0])
     note_x = float(note.get("default-x", 0.0))
 
-    if not (note_x > x_offset[voice]):
-        #print("discard", (note_x, measure.get("number")))
-        return
-    else:
-        x_offset[voice] = note_x
+    #if not (note_x > x_offset[voice]):
+    #    print("discard", (note_x))
+    #    return
+    #else:
+    x_offset[voice] = note_x
 
     duration = int(note.xpath('./duration/text()')[0])
-    assert duration < 32, (note_x)
+    assert duration < 256, (note_x)
 
     if note.xpath('./rest'):
-        yield voice, duration, (duration << 11) | 0
+        yield voice, duration, 0
     else:
         octave = int(note.xpath('./pitch/octave/text()')[0])
         step = note.xpath('./pitch/step/text()')[0]
@@ -168,7 +174,7 @@ def parse_note(note, x_offset):
         assert n < (2 ** 11), (frequency, n)
         #print(voice, octave, step, alter, duration)
 
-        yield voice, duration, (duration << 11) | n
+        yield voice, duration, n
 
 
 def parse_measures(measures):
@@ -178,7 +184,7 @@ def parse_measures(measures):
 
     for measure in measures:
         assert int(measure.get('number')) > measure_number
-        measure_num = int(measure.get('number'))
+        measure_number = int(measure.get('number'))
 
         #attributes_path = measure.xpath('./attributes')
         #if attributes_path:
@@ -188,15 +194,15 @@ def parse_measures(measures):
         x_offset = defaultdict(lambda: -1.0)
         measure_duration = 0
         for note in measure.xpath('./note'):
-            for voice, note_duration, data in parse_note(note, x_offset):
-                measure_duration += note_duration
-                voices[voice].append(data)
+            for voice, duration, frequency in parse_note(note, x_offset):
+                measure_duration += duration
+                voices[voice].append((duration, frequency))
 
         # time signature changes require more thought
         if last_duration == -1:
             last_duration = measure_duration
         else:
-            assert last_duration == measure_duration, measure_number
+            assert last_duration == measure_duration, (measure_duration, measure_number)
 
     return voices
 
@@ -209,12 +215,15 @@ def main():
     measures = root.xpath('//measure')
     voices = parse_measures(measures)
 
+    voice = 0
+    prefix = sys.argv[2]
     for k, v in voices.items():
-        fn = f"voice_{k}.dfreq"
+        fn = f"{prefix}_voice_{voice}.dfreq"
+        voice += 1
         print(fn)
         with open(fn, "wb") as f:
-            for n in v:
-                f.write(struct.pack("<H", n))
+            for duration, frequency in v:
+                f.write(struct.pack("<BBH", duration, 0, frequency))
 
 
 main()

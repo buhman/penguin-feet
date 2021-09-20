@@ -14,13 +14,13 @@ typedef struct {
 } state_t;
 
 static state_t voice[2] = {
-  { (u32)&_binary_music_passacaglia_voice_0_dfreq_start,
-    (u32)&_binary_music_passacaglia_voice_0_dfreq_size,
+  { (u32)&_binary_music_sketch_voice_0_dfreq_start,
+    (u32)&_binary_music_sketch_voice_0_dfreq_size,
     0,
     0 },
 
-  { (u32)&_binary_music_passacaglia_voice_1_dfreq_start,
-    (u32)&_binary_music_passacaglia_voice_1_dfreq_size,
+  { (u32)&_binary_music_sketch_voice_1_dfreq_start,
+    (u32)&_binary_music_sketch_voice_1_dfreq_size,
     0,
     0 },
 };
@@ -63,32 +63,37 @@ static u8 _step = 0;
 void music_step(void)
 {
   _step++;
-  if (_step == 15) {
+  /*
+  if (_step == 1) {
     _step = 0;
   } else return;
+  */
 
   for (int vi = 0; vi < 2; vi++) {
     u32 step = voice[vi].step;
     voice[vi].step = step + 1;
     u32 offset = voice[vi].offset;
 
-    u32 data = ((u16 *)(voice[vi].start))[offset];
-    u32 duration = data >> 11;
+    u32 duration = *((u8 *)(voice[vi].start + offset));
     if (step + 1 == duration) {
-      voice[vi].offset = offset + 1;
+      u32 next_offset = offset + 4;
+      if (next_offset >= voice[vi].size) {
+        voice[vi].offset = 0;
+      } else {
+        voice[vi].offset = next_offset;
+      }
       voice[vi].step = 0;
     }
     if (step != 0)
       continue;
 
     /* */
-
-    u32 frequency = data & 0x7ff;
+    u32 frequency = *((u16 *)(voice[vi].start + offset + 2));
 
     *(volatile u16 *)(IO_REG + reg_offset[vi][0]) =
       ( SOUND1_CNT_H__ENVELOPE_VALUE(frequency == 0 ? 0 : 12)
       | SOUND1_CNT_H__ENVELOPE_STEPS(0)
-      | SOUND1_CNT_H__DUTY_CYCLE(2)
+      | SOUND1_CNT_H__DUTY_CYCLE(3)
       );
 
     *(volatile u16 *)(IO_REG + reg_offset[vi][1]) =

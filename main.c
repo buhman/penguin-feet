@@ -100,8 +100,17 @@ void _user_isr(void)
 {
   *(volatile u16 *)(IO_REG + IME) = 0;
 
+  u32 ireq = *(volatile u16 *)(IO_REG + IF);
+  if ((ireq & IE__TIMER_0) != 0) {
+    ireq = IE__TIMER_0;
+
+    music_step();
+    goto _end;
+  }
+  else
+    ireq = IE__V_BLANK;
+
   log_step(&pathable[0], &interactable[0]);
-  //music_step();
 
   /* */
 
@@ -219,7 +228,7 @@ void _user_isr(void)
 
   /* */
 _end:
-  *(volatile u16 *)(IO_REG + IF) = IE__V_BLANK;
+  *(volatile u16 *)(IO_REG + IF) = ireq;
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
   return;
@@ -239,7 +248,7 @@ void _main(void)
   //background_init();
   path_debug_init(); // palette 1, screen 30+29
 
-  //music_init();
+  music_init();
 
   /* initialize graph_path with -1 */
   ucs((void *)0, (value_t)-1, &path[0]);
@@ -280,7 +289,20 @@ void _main(void)
   *(volatile u32 *)(IWRAM_USER_ISR) = (u32)(&_user_isr);
 
   *(volatile u16 *)(IO_REG + DISPSTAT) = DISPSTAT__V_BLANK_INT_ENABLE;
-  *(volatile u16 *)(IO_REG + IE) = IE__V_BLANK;
+
+  *(volatile u16 *)(IO_REG + TM0CNT_L) = (u16)-3581;
+
+  *(volatile u16 *)(IO_REG + TM0CNT_H) =
+    ( TM_CNT_H__ENABLE
+    | TM_CNT_H__INT_ENABLE
+    | TM_CNT_H__PRESCALAR_64
+    );
+
+  *(volatile u16 *)(IO_REG + IE) =
+    ( IE__V_BLANK
+    | IE__TIMER_0
+    );
+  *(volatile u16 *)(IO_REG + IF) = (u16)-1;
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
   while (1) {
