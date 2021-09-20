@@ -47,7 +47,6 @@ void _user_isr(void)
 
   *(volatile u16 *)(IO_REG + IF) = IE__TIMER_0;
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
-  return;
 }
 
 void _main(void)
@@ -90,7 +89,7 @@ void _main(void)
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
   while (1) {
-    *(volatile u8 *)(IO_REG + 0x300 + 1) = 0;
+    *(volatile u8 *)(IO_REG + HALTCNT) = 0;
   }
 }
 

@@ -1,5 +1,5 @@
 ARCH ?= -mthumb-interwork -march=armv4t
-override CFLAGS += -std=gnu2x -g -Og -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-label
+override CFLAGS += -std=gnu2x -g -Og -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-label -I$(PWD)
 CARCH ?= -mtune=arm7tdmi -ffreestanding -nostdlib
 AFLAGS ?= -g
 

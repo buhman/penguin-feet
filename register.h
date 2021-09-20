@@ -182,6 +182,31 @@
 #define SOUND2_CNT_H__SOUND_LENGTH (1 << 14)
 #define SOUND2_CNT_H__FREQUENCY_DATA(n) ((n) << 0)
 
+#define SOUND3_CNT_L 0x070
+#define SOUND3_CNT_L__SOUND_OUTPUT (1 << 7)
+#define SOUND3_CNT_L__WAVE_BANK(n) ((n) << 6)
+#define SOUND3_CNT_L__WAVE_32_STEP (0 << 5)
+#define SOUND3_CNT_L__WAVE_64_STEP (1 << 5)
+
+#define SOUND3_CNT_H 0x072
+#define SOUND3_CNT_H__FORCE_OUTPUT_LEVEL (1 << 15)
+#define SOUND3_CNT_H__OUTPUT_LEVEL(n) ((n) << 13)
+#define SOUND3_CNT_H__SOUND_LENGTH(n) ((n) << 0)
+
+#define SOUND3_CNT_X 0x074
+#define SOUND3_CNT_X__RESTART (1 << 15)
+#define SOUND3_CNT_X__SOUND_LENGTH (1 << 14)
+#define SOUND3_CNT_X__FREQUNCY_DATA(n) ((n) << 0)
+
+#define WAVE_RAM0_L 0x090
+#define WAVE_RAM0_H 0x092
+#define WAVE_RAM1_L 0x094
+#define WAVE_RAM1_H 0x096
+#define WAVE_RAM2_L 0x098
+#define WAVE_RAM2_H 0x09a
+#define WAVE_RAM3_L 0x09c
+#define WAVE_RAM3_H 0x09e
+
 #define SOUND4_CNT_L 0x78
 #define SOUND4_CNT_L__ENVELOPE_VALUE(n) ((n) << 12)
 #define SOUND4_CNT_L__ENVELOPE_AMPLIFY (1 << 11)

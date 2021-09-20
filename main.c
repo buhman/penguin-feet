@@ -294,7 +294,7 @@ void _main(void)
 
   *(volatile u16 *)(IO_REG + TM0CNT_H) =
     ( TM_CNT_H__ENABLE
-    | TM_CNT_H__INT_ENABLE
+      //| TM_CNT_H__INT_ENABLE
     | TM_CNT_H__PRESCALAR_64
     );
 

@@ -9,6 +9,10 @@ define BUILD_BINARY_O
 		$< $@
 endef
 
+define LINK_ELF
+	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@
+endef
+
 %.palette.o: %.palette
 	$(BUILD_BINARY_O)
 
@@ -78,11 +82,15 @@ OBJS += log.o $(LOG_OBJ)
 OBJS += music.o $(MUSIC_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
-	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@
+	$(LINK_ELF)
 
-SNES_OBJS = header.o load.o main_gpio.o
-snes.elf: $(SNES_OBJS) | animals.lds
-	$(LD) -Map=$@.map -T animals.lds $^ -o $@
+GPIO_OBJS = header.o load.o demo/main_gpio.o
+gpio.elf: $(GPIO_OBJS) | animals.lds
+	$(LINK_ELF)
+
+SAWTOOTH_OBJS = header.o load.o demo/main_sawtooth.o
+sawtooth.elf: $(SAWTOOTH_OBJS) | animals.lds
+	$(LINK_ELF)
 
 deploy: animals.gba
 
