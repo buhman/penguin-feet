@@ -10,19 +10,40 @@ typedef struct {
   u32 start;
   u32 size;
   u32 offset;
-  u32 step;
+  u16 step;
+  u8 sound;
+  u8 _padding;
 } state_t;
 
-static state_t voice[2] = {
-  { (u32)&_binary_music_sketch_voice_0_dfreq_start,
-    (u32)&_binary_music_sketch_voice_0_dfreq_size,
-    0,
-    0 },
+enum {
+  SOUND1,
+  SOUND2,
+  SOUND4
+};
 
-  { (u32)&_binary_music_sketch_voice_1_dfreq_start,
-    (u32)&_binary_music_sketch_voice_1_dfreq_size,
-    0,
-    0 },
+static u8 voices = 3;
+static state_t voice[3] = {
+  {
+    .start = (u32)&_binary_music_sketch_part_P1_voice_1_dfreq_start,
+    .size = (u32)&_binary_music_sketch_part_P1_voice_1_dfreq_size,
+    .offset = 0,
+    .step = 0,
+    .sound = SOUND1
+  },
+  {
+    .start = (u32)&_binary_music_sketch_part_P1_voice_5_dfreq_start,
+    .size = (u32)&_binary_music_sketch_part_P1_voice_5_dfreq_size,
+    .offset = 0,
+    .step = 0,
+    .sound = SOUND2
+  },
+  {
+    .start = (u32)&_binary_music_sketch_part_P2_voice_1_dfreq_start,
+    .size = (u32)&_binary_music_sketch_part_P2_voice_1_dfreq_size,
+    .offset = 0,
+    .step = 0,
+    .sound = SOUND4
+  },
 };
 
 void music_init(void)
@@ -31,6 +52,7 @@ void music_init(void)
     ( SOUNDCNT_X__ENABLE
     | SOUNDCNT_X__ENABLE_1
     | SOUNDCNT_X__ENABLE_2
+    | SOUNDCNT_X__ENABLE_4
     );
 
   *(volatile u16 *)(IO_REG + SOUNDCNT_L) =
@@ -38,6 +60,8 @@ void music_init(void)
     | SOUNDCNT_L__OUTPUT_1_R
     | SOUNDCNT_L__OUTPUT_2_L
     | SOUNDCNT_L__OUTPUT_2_R
+    | SOUNDCNT_L__OUTPUT_4_L
+    | SOUNDCNT_L__OUTPUT_4_R
     | SOUNDCNT_L__OUTPUT_LEVEL_L(5)
     | SOUNDCNT_L__OUTPUT_LEVEL_R(5)
     );
@@ -51,11 +75,19 @@ void music_init(void)
     | SOUND1_CNT_L__SWEEP_DECREASE
     | SOUND1_CNT_L__SWEEP_SHIFTS(0)
     );
+
+  // not setting parameters on 4 prior to restart appears to make the first
+  // restart sound "weird"
+  *(volatile u16 *)(IO_REG + SOUND4_CNT_H) =
+    ( SOUND4_CNT_H__COUNTER_SHIFT_FREQ(1)
+    | SOUND4_CNT_H__COUNTER_PRESCALAR(4)
+    );
 }
 
-static u8 reg_offset[2][2] = {
-  {SOUND1_CNT_H, SOUND1_CNT_X},
-  {SOUND2_CNT_L, SOUND2_CNT_H}
+static u8 reg_offset[][2] = {
+  [SOUND1] = {SOUND1_CNT_H, SOUND1_CNT_X},
+  [SOUND2] = {SOUND2_CNT_L, SOUND2_CNT_H},
+  [SOUND4] = {SOUND4_CNT_L, SOUND4_CNT_H},
 };
 
 static u8 _step = 0;
@@ -69,7 +101,7 @@ void music_step(void)
   } else return;
   */
 
-  for (int vi = 0; vi < 2; vi++) {
+  for (int vi = 0; vi < voices; vi++) {
     u32 step = voice[vi].step;
     voice[vi].step = step + 1;
     u32 offset = voice[vi].offset;
@@ -90,15 +122,31 @@ void music_step(void)
     /* */
     u32 frequency = *((u16 *)(voice[vi].start + offset + 2));
 
-    *(volatile u16 *)(IO_REG + reg_offset[vi][0]) =
-      ( SOUND1_CNT_H__ENVELOPE_VALUE(frequency == 0 ? 0 : 12)
-      | SOUND1_CNT_H__ENVELOPE_STEPS(0)
-      | SOUND1_CNT_H__DUTY_CYCLE(3)
-      );
+    u32 sound = voice[vi].sound;
+    if (sound == SOUND4) {
+      *(volatile u16 *)(IO_REG + reg_offset[sound][0]) =
+        ( SOUND4_CNT_L__ENVELOPE_VALUE(frequency == 0 ? 0 : 12)
+        | SOUND4_CNT_L__ENVELOPE_STEPS(1)
+        | SOUND4_CNT_L__SOUND_LENGTH(30)
+        );
 
-    *(volatile u16 *)(IO_REG + reg_offset[vi][1]) =
-      ( SOUND1_CNT_X__FREQUENCY_DATA(frequency)
-      | SOUND1_CNT_X__RESTART
-      );
+      *(volatile u16 *)(IO_REG + reg_offset[sound][1]) =
+        ( SOUND4_CNT_H__RESTART
+        | SOUND4_CNT_H__COUNTER_SHIFT_FREQ(1)
+        | SOUND4_CNT_H__COUNTER_PRESCALAR(4)
+        );
+    }
+    else { // SOUND1 or SOUND2
+      *(volatile u16 *)(IO_REG + reg_offset[sound][0]) =
+        ( SOUND1_CNT_H__ENVELOPE_VALUE(frequency == 0 ? 0 : 12)
+        | SOUND1_CNT_H__ENVELOPE_STEPS(0)
+        | SOUND1_CNT_H__DUTY_CYCLE(3)
+        );
+
+      *(volatile u16 *)(IO_REG + reg_offset[sound][1]) =
+        ( SOUND1_CNT_X__FREQUENCY_DATA(frequency)
+        | SOUND1_CNT_X__RESTART
+        );
+    }
   }
 }

@@ -13,6 +13,7 @@ frequencies = {
     "D#2": 77.78,
     "Eb2": 77.78,
     "E2": 82.41,
+    "Fb2": 82.41,
     "F2": 87.31,
     "F#2": 92.50,
     "Gb2": 92.50,
@@ -31,6 +32,7 @@ frequencies = {
     "D#3": 155.56,
     "Eb3": 155.56,
     "E3": 164.81,
+    "Fb3": 164.81,
     "F3": 174.61,
     "F#3": 185.00,
     "Gb3": 185.00,
@@ -49,6 +51,7 @@ frequencies = {
     "D#4": 311.13,
     "Eb4": 311.13,
     "E4": 329.63,
+    "Fb4": 329.63,
     "F4": 349.23,
     "F#4": 369.99,
     "Gb4": 369.99,
@@ -67,6 +70,7 @@ frequencies = {
     "D#5": 622.25,
     "Eb5": 622.25,
     "E5": 659.25,
+    "Fb5": 659.25,
     "F5": 698.46,
     "F#5": 739.99,
     "Gb5": 739.99,
@@ -85,6 +89,7 @@ frequencies = {
     "D#6": 1244.51,
     "Eb6": 1244.51,
     "E6": 1318.51,
+    "Fb6": 1318.51,
     "F6": 1396.91,
     "F#6": 1479.98,
     "Gb6": 1479.98,
@@ -103,6 +108,7 @@ frequencies = {
     "D#7": 2489.02,
     "Eb7": 2489.02,
     "E7": 2637.02,
+    "Fb7": 2637.02,
     "F7": 2793.83,
     "F#7": 2959.96,
     "Gb7": 2959.96,
@@ -121,6 +127,7 @@ frequencies = {
     "D#8": 4978.03,
     "Eb8": 4978.03,
     "E8": 5274.04,
+    "Fb8": 5274.04,
     "F8": 5587.65,
     "F#8": 5919.91,
     "Gb8": 5919.91,
@@ -148,7 +155,7 @@ def _key(octave, step, alter):
     return f"{step}{sign}{octave}"
 
 
-def parse_note(note, x_offset):
+def parse_note(measure_number, note, x_offset):
     voice = int(note.xpath('./voice/text()')[0])
     note_x = float(note.get("default-x", 0.0))
 
@@ -163,13 +170,20 @@ def parse_note(note, x_offset):
 
     if note.xpath('./rest'):
         yield voice, duration, 0
+    elif note.xpath('./unpitched'):
+        yield voice, duration, 0xffff
     else:
         octave = int(note.xpath('./pitch/octave/text()')[0])
         step = note.xpath('./pitch/step/text()')[0]
         alter = note.xpath('./pitch/alter/text()') # 1 sharp -1 flat
         alter = int(next(iter(alter), 0))
 
-        frequency = frequencies[_key(octave, step, alter)]
+        try:
+            frequency = frequencies[_key(octave, step, alter)]
+        except KeyError:
+            print("measure", measure_number)
+            raise
+
         n = as_n(frequency)
         assert n < (2 ** 11), (frequency, n)
         #print(voice, octave, step, alter, duration)
@@ -179,7 +193,6 @@ def parse_note(note, x_offset):
 
 def parse_measures(measures):
     measure_number = 0
-    voices = defaultdict(list)
     last_duration = -1
 
     for measure in measures:
@@ -194,9 +207,9 @@ def parse_measures(measures):
         x_offset = defaultdict(lambda: -1.0)
         measure_duration = 0
         for note in measure.xpath('./note'):
-            for voice, duration, frequency in parse_note(note, x_offset):
+            for voice, duration, frequency in parse_note(measure_number, note, x_offset):
                 measure_duration += duration
-                voices[voice].append((duration, frequency))
+                yield voice, (duration, frequency)
 
         # time signature changes require more thought
         if last_duration == -1:
@@ -204,22 +217,28 @@ def parse_measures(measures):
         else:
             assert last_duration == measure_duration, (measure_duration, measure_number)
 
-    return voices
+
+def parse_parts(root):
+    parts = root.xpath('//part')
+    for part in parts:
+        part_id = part.get("id")
+        assert part_id
+        measures = part.xpath('./measure')
+        for voice, d__f in parse_measures(measures):
+            yield (part_id, voice), d__f
 
 
 def main():
     with open(sys.argv[1], 'rb') as f:
         root = etree.fromstring(f.read())
 
-    assert len(root.xpath('//part')) == 1, root.xpath('//part')
-    measures = root.xpath('//measure')
-    voices = parse_measures(measures)
+    voices = defaultdict(list)
+    for p__v, d__f in parse_parts(root):
+        voices[p__v].append(d__f)
 
-    voice = 0
     prefix = sys.argv[2]
     for k, v in voices.items():
-        fn = f"{prefix}_voice_{voice}.dfreq"
-        voice += 1
+        fn = f"{prefix}_part_{k[0]}_voice_{k[1]}.dfreq"
         print(fn)
         with open(fn, "wb") as f:
             for duration, frequency in v:

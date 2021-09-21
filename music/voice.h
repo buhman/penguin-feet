@@ -4,8 +4,11 @@ extern unsigned int _binary_music_passacaglia_voice_0_dfreq_size;
 extern unsigned int _binary_music_passacaglia_voice_1_dfreq_start;
 extern unsigned int _binary_music_passacaglia_voice_1_dfreq_size;
 
-extern unsigned int _binary_music_sketch_voice_0_dfreq_start;
-extern unsigned int _binary_music_sketch_voice_0_dfreq_size;
+extern unsigned int _binary_music_sketch_part_P1_voice_1_dfreq_start;
+extern unsigned int _binary_music_sketch_part_P1_voice_1_dfreq_size;
 
-extern unsigned int _binary_music_sketch_voice_1_dfreq_start;
-extern unsigned int _binary_music_sketch_voice_1_dfreq_size;
+extern unsigned int _binary_music_sketch_part_P1_voice_5_dfreq_start;
+extern unsigned int _binary_music_sketch_part_P1_voice_5_dfreq_size;
+
+extern unsigned int _binary_music_sketch_part_P2_voice_1_dfreq_start;
+extern unsigned int _binary_music_sketch_part_P2_voice_1_dfreq_size;

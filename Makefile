@@ -70,8 +70,9 @@ LOG_OBJ += character/log.character.o
 
 #MUSIC_OBJ = music/passacaglia_voice_0.dfreq.o
 #MUSIC_OBJ += music/passacaglia_voice_1.dfreq.o
-MUSIC_OBJ = music/sketch_voice_0.dfreq.o
-MUSIC_OBJ += music/sketch_voice_1.dfreq.o
+MUSIC_OBJ = music/sketch_part_P1_voice_1.dfreq.o
+MUSIC_OBJ += music/sketch_part_P1_voice_5.dfreq.o
+MUSIC_OBJ += music/sketch_part_P2_voice_1.dfreq.o
 
 OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o
 OBJS += path_debug.o ucs.o min_heap.o
