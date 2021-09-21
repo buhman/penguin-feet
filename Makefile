@@ -78,13 +78,14 @@ MUSIC_OBJ = music/gba_sketch_02v2__part_P1_voice_1.dfreq.o
 MUSIC_OBJ += music/gba_sketch_02v2__part_P1_voice_5.dfreq.o
 MUSIC_OBJ += music/gba_sketch_02v2__part_P2_voice_1.dfreq.o
 
-OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o
+OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o actor.o
 OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o $(LEVEL_OBJ)
 OBJS += obj.o $(PENGUIN_OBJ) $(BEE_OBJ)
 OBJS += footprint.o $(FOOTPRINT_OBJ)
 OBJS += log.o $(LOG_OBJ)
 OBJS += music.o $(MUSIC_OBJ)
+OBJS += bee.o
 
 animals.elf: $(OBJS) | animals.lds
 	$(LINK_ELF)

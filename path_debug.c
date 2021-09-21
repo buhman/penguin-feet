@@ -24,7 +24,7 @@ void path_debug_init(void)
 }
 
 void path_debug_update(const value_t source, const value_t target,
-                       const u32 screen, value_t * path)
+                       const u32 screen, const value_t * path)
 {
   fill_16((void *)(VRAM + SCREEN_BASE_BLOCK(screen)),
           0,

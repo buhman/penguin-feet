@@ -15,6 +15,8 @@
 #include "log.h"
 #include "music.h"
 #include "interactable.h"
+#include "actor.h"
+#include "bee.h"
 
 #include "ucs.h"
 #include "heap.h"
@@ -31,33 +33,19 @@ static u32 unvisited_count;
 #define DPAD_UP    KEYCNT__INPUT_UP
 #define DPAD_DOWN  KEYCNT__INPUT_DOWN
 
-typedef struct {
-  u16 q;
-  u16 r;
-} ucs_coord_t;
-
-typedef struct {
-  s8 q;
-  s8 r;
-} neg_t;
-
-typedef struct {
-  u16 x;              // screen coordinates
-  u16 y;
-  ucs_coord_t target; // ucs coordinates
-  neg_t neg;
-} actor_t;
+#define PENGUIN_Q 3
+#define PENGUIN_R 1
 
 static actor_t penguin = {
-  .x = 11 * 8,
-  .y = 13 * 8,
-  .target.q = 11,
-  .target.r = 13,
+  .x = PENGUIN_Q * 8,
+  .y = PENGUIN_R * 8,
+  .target.q = PENGUIN_Q,
+  .target.r = PENGUIN_R,
   .neg.q = 0,
   .neg.r = 0,
 };
 
-static u8 screen = 30;
+static u8 debug_screen = 30;
 
 #define IN_BOUNDS(_q, _r) ((_q) >= 0 && (_q) <= 31 && (_r) >= 0 && (_r) <= 31)
 
@@ -92,7 +80,6 @@ static void next_level(void)
   footprint_init();
   interactable_init(&pathable[0], &interactable[0]);
   log_init(&pathable[0], &interactable[0]);
-  obj_init();
 }
 
 
@@ -118,7 +105,7 @@ void _user_isr(void)
     ( BG_CNT__COLOR_16_16
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(1)
-    | BG_CNT__SCREEN_BASE_BLOCK(screen)
+    | BG_CNT__SCREEN_BASE_BLOCK(debug_screen)
     | BG_CNT__PRIORITY(0)
     );
 
@@ -131,6 +118,7 @@ void _user_isr(void)
 
   value_t source = UCS_QR_VALUE(penguin_q, penguin_r);
   ucs(&pathable[0], source, &path[0]);
+  debug_screen = (u8)bee_step(source, &path[0]);
 
   s8 dx;
   s8 dy;
@@ -173,34 +161,10 @@ void _user_isr(void)
     }
   }
 
-  value_t target = UCS_QR_VALUE(penguin.target.q, penguin.target.r);
-
   s32 dq;
   s32 dr;
-  {
-    value_t w = target;
-    value_t next_w = target;
-    while (w != (value_t)-1 && w != source) {
-      next_w = w;
-      w = path[w];
-    }
-    (void)next_w;
-
-    screen = (screen == 30) ? 29 : 30;
-    path_debug_update(source, target, screen, &path[0]);
-
-    u32 next_w_q = next_w & 31;
-    u32 next_w_r = next_w / 32;
-
-    dq = next_w_q - penguin_q;
-    dr = next_w_r - penguin_r;
-    penguin.neg.q = (dq < 0);
-    penguin.neg.r = (dr < 0);
-    penguin.x += dq;
-    penguin.y += dr;
-
-    obj_update(OBJ_BEE_ATTRIBUTE, penguin.x, penguin.y);
-  }
+  actor_move_rpath(penguin_q, penguin_r, source, &path[0], &penguin, &dq, &dr);
+  obj_update(OBJ_PENGUIN_ATTRIBUTE, penguin.x, penguin.y);
 
   {
     if ((dq != 0 || dr != 0) && (penguin.x & 0b111) == 0 && (penguin.y & 0b111) == 0) {
@@ -243,6 +207,7 @@ void _main(void)
           0,
           (8 * 8 / 2));
 
+  obj_init();
   next_level();
 
   //background_init();
