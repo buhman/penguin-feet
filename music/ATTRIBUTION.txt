@@ -8,6 +8,7 @@
 "GBA sketch 02" (All rights reserved)
   Composed by Aaron Fryklund
   Translated to "dfreq" by pack/score.py
+  Used with permission
 
   Included with permission
 
