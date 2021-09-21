@@ -82,13 +82,16 @@ enum {
 
 static void log_update(const u32 orientation_n, u32 * pathable, u8 * interactable);
 
+#define LOG_PALETTE (2)
+#define LOG_VRAM_OFFSET (32 + 128 + 128)
+
 void log_init(u32 * pathable, u8 * interactable)
 {
-  copy_16((void *)(PRAM_OBJ + PRAM_PALETTE(1)),
+  copy_16((void *)(PRAM_OBJ + PRAM_PALETTE(LOG_PALETTE)),
           (void *)&_binary_character_log_palette_start,
           (u32)&_binary_character_log_palette_size);
 
-  copy_16((void *)(VRAM_OBJ + 32 + 128),
+  copy_16((void *)(VRAM_OBJ + LOG_VRAM_OFFSET),
           (void *)&_binary_character_log_character_start,
           (u32)&_binary_character_log_character_size);
 
@@ -106,9 +109,9 @@ void log_init(u32 * pathable, u8 * interactable)
     );
 
   *(volatile u16 *)(OAM + OAM_OBJ_ATTRIBUTE(16, 2)) =
-    ( OBJ_A2__COLOR_PALETTE(1)
+    ( OBJ_A2__COLOR_PALETTE(LOG_PALETTE)
     | OBJ_A2__PRIORITY(0)
-    | OBJ_A2__CHARACTER(5)
+    | OBJ_A2__CHARACTER(LOG_VRAM_OFFSET / 32)
     );
 
   // identity matrix

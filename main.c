@@ -5,7 +5,7 @@
 #include "tile.h"
 
 #include "level.h"
-#include "penguin.h"
+#include "obj.h"
 #include "background.h"
 #include "graph.h"
 #include "path_debug.h"
@@ -92,7 +92,7 @@ static void next_level(void)
   footprint_init();
   interactable_init(&pathable[0], &interactable[0]);
   log_init(&pathable[0], &interactable[0]);
-  penguin_init();
+  obj_init();
 }
 
 
@@ -199,7 +199,7 @@ void _user_isr(void)
     penguin.x += dq;
     penguin.y += dr;
 
-    penguin_update(penguin.x, penguin.y);
+    obj_update(OBJ_BEE_ATTRIBUTE, penguin.x, penguin.y);
   }
 
   {
@@ -294,7 +294,7 @@ void _main(void)
 
   *(volatile u16 *)(IO_REG + TM0CNT_H) =
     ( TM_CNT_H__ENABLE
-    | TM_CNT_H__INT_ENABLE
+    //| TM_CNT_H__INT_ENABLE
     | TM_CNT_H__PRESCALAR_64
     );
 

@@ -53,6 +53,9 @@ MAZE_TILE_OBJ += character/maze_tile_TEE_WNE.character.o
 PENGUIN_OBJ = character/penguin.palette.o
 PENGUIN_OBJ += character/penguin.character.o
 
+BEE_OBJ = character/bee.palette.o
+BEE_OBJ += character/bee.character.o
+
 BACKGROUND_OBJ = character/background.palette.o
 BACKGROUND_OBJ += character/background.character.o
 
@@ -77,7 +80,7 @@ MUSIC_OBJ += music/sketch_part_P2_voice_1.dfreq.o
 OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o
 OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o $(LEVEL_OBJ)
-OBJS += penguin.o $(PENGUIN_OBJ)
+OBJS += obj.o $(PENGUIN_OBJ) $(BEE_OBJ)
 OBJS += footprint.o $(FOOTPRINT_OBJ)
 OBJS += log.o $(LOG_OBJ)
 OBJS += music.o $(MUSIC_OBJ)
