@@ -40,6 +40,9 @@ maze_tile_%.character: maze_tile_%.data
 footprint_%.character: footprint_%.data
 	python pack/character.py $< $(@D)/footprint.dim $@
 
+music/gba_sketch_02v2_%.dfreq: music/gba_sketch_02v2.musicxml
+	python pack/score.py $< music/gba_sketch_02v2_
+
 MAZE_TILE_OBJ = character/maze_tile.palette.o
 MAZE_TILE_OBJ += character/maze_tile_CORNER_NE.character.o
 MAZE_TILE_OBJ += character/maze_tile_CROSS_NESW.character.o
@@ -71,11 +74,9 @@ FOOTPRINT_OBJ += character/footprint_north_1.character.o
 LOG_OBJ = character/log.palette.o
 LOG_OBJ += character/log.character.o
 
-#MUSIC_OBJ = music/passacaglia_voice_0.dfreq.o
-#MUSIC_OBJ += music/passacaglia_voice_1.dfreq.o
-MUSIC_OBJ = music/sketch_part_P1_voice_1.dfreq.o
-MUSIC_OBJ += music/sketch_part_P1_voice_5.dfreq.o
-MUSIC_OBJ += music/sketch_part_P2_voice_1.dfreq.o
+MUSIC_OBJ = music/gba_sketch_02v2__part_P1_voice_1.dfreq.o
+MUSIC_OBJ += music/gba_sketch_02v2__part_P1_voice_5.dfreq.o
+MUSIC_OBJ += music/gba_sketch_02v2__part_P2_voice_1.dfreq.o
 
 OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o
 OBJS += path_debug.o ucs.o min_heap.o

@@ -5,10 +5,9 @@
   - passacaglia_voice_1.dfreq
   - passacaglia_voice_2.dfreq
 
-"GBA sketch 02" (All rights reserved)
+"GBA sketch 02" (CC BY 4.0)
   Composed by Aaron Fryklund
   Translated to "dfreq" by pack/score.py
-  Used with permission
 
   Included with permission
 

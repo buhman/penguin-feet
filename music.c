@@ -3,7 +3,7 @@
 #include "register.h"
 #include "character.h"
 
-#include "music/voice.h"
+#include "music/music.h"
 #include "music.h"
 
 typedef struct {
@@ -25,22 +25,22 @@ enum {
 static u8 voices = 3;
 static state_t voice[3] = {
   {
-    .start = (u32)&_binary_music_sketch_part_P1_voice_1_dfreq_start,
-    .size = (u32)&_binary_music_sketch_part_P1_voice_1_dfreq_size,
+    .start = (u32)&_binary_music_gba_sketch_02v2__part_P1_voice_1_dfreq_start,
+    .size = (u32)&_binary_music_gba_sketch_02v2__part_P1_voice_1_dfreq_size,
     .offset = 0,
     .step = 0,
     .sound = SOUND1
   },
   {
-    .start = (u32)&_binary_music_sketch_part_P1_voice_5_dfreq_start,
-    .size = (u32)&_binary_music_sketch_part_P1_voice_5_dfreq_size,
+    .start = (u32)&_binary_music_gba_sketch_02v2__part_P1_voice_5_dfreq_start,
+    .size = (u32)&_binary_music_gba_sketch_02v2__part_P1_voice_5_dfreq_size,
     .offset = 0,
     .step = 0,
     .sound = SOUND3
   },
   {
-    .start = (u32)&_binary_music_sketch_part_P2_voice_1_dfreq_start,
-    .size = (u32)&_binary_music_sketch_part_P2_voice_1_dfreq_size,
+    .start = (u32)&_binary_music_gba_sketch_02v2__part_P2_voice_1_dfreq_start,
+    .size = (u32)&_binary_music_gba_sketch_02v2__part_P2_voice_1_dfreq_size,
     .offset = 0,
     .step = 0,
     .sound = SOUND4
