@@ -7,7 +7,7 @@
 #include "character.h"
 
 #define BEE_Q 10
-#define BEE_R 2
+#define BEE_R 1
 
 static actor_t bee = {
   .x = BEE_Q * 8,

@@ -34,7 +34,7 @@ endef
 %.palette: %.pal
 	python pack/palette.py $< $@
 
-%.level: %.data
+%.level: %.data pack/level.py
 	python pack/level.py $< $@
 
 %.glyph: %.data
@@ -70,6 +70,7 @@ BACKGROUND_OBJ += character/background.character.o
 
 LEVEL_OBJ = level/0.level.o
 LEVEL_OBJ += level/1.level.o
+LEVEL_OBJ += level/2.level.o
 
 FOOTPRINT_OBJ = character/footprint.palette.o
 FOOTPRINT_OBJ += character/footprint_east_0.character.o

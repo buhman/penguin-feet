@@ -1,3 +1,4 @@
+#include "assert.h"
 #include "actor.h"
 #include "background.h"
 #include "base.h"
@@ -88,9 +89,13 @@ static state_t transitions[LAST_STATE] = {
   [LEVEL] = PRE_LEVEL,
 };
 
+static s8 level = -1;
+
 static void next_level(void)
 {
-  level_init(1, &pathable[0], &printable[0]);
+  level++;
+  level_init(level, &pathable[0], &printable[0]);
+  level_reset_penguin(level, &penguin);
   level_counter_init(&printable[0], &visited[0], &unvisited_count);
   footprint_init();
   interactable_init(&pathable[0], &interactable[0]);
@@ -108,9 +113,35 @@ static u8 level0_0[] =
 static u8 level0_1[] =
   {15, 18, 21, 21, 255, 29, 17, 14, 255, 25, 10, 29, 17};
 
+// hide
+static u8 level1_0[] =
+  {17, 18, 13, 14};
+
+// trust the rainbow
+static u8 level1_1[] =
+  {29, 27, 30, 28, 29, 255, 29, 17, 14, 255, 27, 10, 18, 23, 11, 24, 32};
+
+// thanks for playing
+static u8 thanks[] =
+  {29, 17, 10, 23, 20, 28, 255, 15, 24, 27, 255, 25, 21, 10, 34, 18, 23, 16};
+
+
+typedef struct {
+  u8 * m0;
+  u8 * m1;
+  u8 m0_length;
+  u8 m1_length;
+} level_message_t;
+
+static level_message_t level_messages[] = {
+  [0] = { &level0_0[0], &level0_1[0], ARRAY_LENGTH(level0_0), ARRAY_LENGTH(level0_1) },
+  [1] = { &level1_0[0], &level1_1[0], ARRAY_LENGTH(level1_0), ARRAY_LENGTH(level1_1) },
+  [LEVEL_LAST] = { &thanks[0], 0, ARRAY_LENGTH(thanks), 0 },
+};
 
 static void next_state(void)
 {
+_next_state:
   state = transitions[state];
 
   switch (state) {
@@ -123,15 +154,23 @@ static void next_state(void)
       );
     break;
   case PRE_LEVEL:
-    glyph_draw_line(2, level0_0, ARRAY_LENGTH(level0_0));
-    glyph_draw_line(6, level0_1, ARRAY_LENGTH(level0_1));
+    glyph_draw_line(2, level_messages[level + 1].m0,
+                       level_messages[level + 1].m0_length);
+    glyph_draw_line(6, level_messages[level + 1].m1,
+                       level_messages[level + 1].m1_length);
     *(volatile u16 *)(IO_REG + DISPCNT) =
       ( DISPCNT__BG3
       | DISPCNT__BG_MODE_0
       );
     break;
   case LEVEL:
-    next_level();
+    if (level < (LEVEL_LAST - 1)) {
+      next_level();
+    } else {
+      state = ZERO;
+      level = -1;
+      goto _next_state;
+    }
     *(volatile u16 *)(IO_REG + DISPCNT) =
       ( DISPCNT__BG0
       | DISPCNT__BG1

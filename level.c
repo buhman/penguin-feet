@@ -6,7 +6,7 @@
 #include "level/level.h"
 #include "assert.h"
 #include "character.h"
-
+#include "actor.h"
 #include "level.h"
 
 /*
@@ -18,19 +18,46 @@
 
  */
 
+typedef struct {
+  void * start;
+  unsigned int size;
+  u8 penguin_q;
+  u8 penguin_r;
+} level_t;
+
 
 #define CHARACTERS 4
 
-static const character_t levels[] = {
+static const level_t levels[LEVEL_LAST] = {
+  /*
   [0] = {
     (void *)&_binary_level_0_level_start,
     (u32)&_binary_level_0_level_size,
   },
+  */
+  [0] = {
+    (void *)&_binary_level_2_level_start,
+    (u32)&_binary_level_2_level_size,
+    0,
+    8,
+  },
   [1] = {
     (void *)&_binary_level_1_level_start,
     (u32)&_binary_level_1_level_size,
+    2,
+    1,
   },
 };
+
+void level_reset_penguin(const u32 level, actor_t * penguin)
+{
+  penguin->x = levels[level].penguin_q * 8;
+  penguin->y = levels[level].penguin_r * 8;
+  penguin->target.q = levels[level].penguin_q;
+  penguin->target.r = levels[level].penguin_r;
+  penguin->neg.q = 0;
+  penguin->neg.r = 0;
+}
 
 void level_init(const u32 level, u32 * pathable, u32 * printable)
 {
@@ -41,15 +68,19 @@ void level_init(const u32 level, u32 * pathable, u32 * printable)
   *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 10) = RGB15( 4, 4, 4); // black
 
   for (u32 i = 1; i < CHARACTERS + 1; i++) {
-    u16 value = i;
-    value = (value << 12) | (value << 8) | (value << 4) | (value << 0);
-    fill_16((void *)( VRAM
+    u32 value = i;
+    value = (value << 28) | (value << 24) | (value << 20) | (value << 16)
+          | (value << 12) | (value <<  8) | (value <<  4) | (value <<  0);
+    fill_32((void *)( VRAM
                     + CHARACTER_BASE_BLOCK(LEVEL_CHARACTER_BASE_BLOCK)
                     + LEVEL_CHARACTER_BLOCK_OFFSET
                     + (i * (8 * 8 / 2))),
             value,
             (8 * 8 / 2));
   }
+
+  fill_32((void *)pathable, 0, 32 * 4);
+  fill_32((void *)printable, 0, 32 * 4);
 
   for (u32 r = 0; r < (32 * 4); r++) {
     u32 v = ((u32 *)(levels[level].start))[r];
