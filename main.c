@@ -70,6 +70,24 @@ static actor_t penguin = {
     }                                                         \
   }
 
+typedef enum {
+  ZERO,
+  TITLE,
+  PRE_LEVEL,
+  LEVEL,
+  //POST_LEVEL,
+  LAST_STATE
+} state_t;
+
+static state_t state = ZERO;
+
+static state_t transitions[LAST_STATE] = {
+  [ZERO] = TITLE,
+  [TITLE] = PRE_LEVEL,
+  [PRE_LEVEL] = LEVEL,
+  [LEVEL] = PRE_LEVEL,
+};
+
 static void next_level(void)
 {
   level_init(1, &pathable[0], &printable[0]);
@@ -79,7 +97,71 @@ static void next_level(void)
   log_init(&pathable[0], &interactable[0]);
 }
 
-void game_step()
+#define ARRAY_LENGTH(_a) ((sizeof (_a)) / (sizeof ((_a)[0])))
+
+static u8 animals[] = {36, 49, 44, 48, 36, 47, 54};
+
+// use your footprints
+static u8 level0_0[] =
+  {30, 28, 14, 255, 34, 24, 30, 27, 255, 15, 24, 24, 29, 25, 27, 18, 23, 29, 28};
+// fill the path
+static u8 level0_1[] =
+  {15, 18, 21, 21, 255, 29, 17, 14, 255, 25, 10, 29, 17};
+
+
+static void next_state(void)
+{
+  state = transitions[state];
+
+  switch (state) {
+  case TITLE:
+    glyph_draw_line(2, animals, ARRAY_LENGTH(animals));
+
+    *(volatile u16 *)(IO_REG + DISPCNT) =
+      ( DISPCNT__BG3
+      | DISPCNT__BG_MODE_0
+      );
+    break;
+  case PRE_LEVEL:
+    glyph_draw_line(2, level0_0, ARRAY_LENGTH(level0_0));
+    glyph_draw_line(6, level0_1, ARRAY_LENGTH(level0_1));
+    *(volatile u16 *)(IO_REG + DISPCNT) =
+      ( DISPCNT__BG3
+      | DISPCNT__BG_MODE_0
+      );
+    break;
+  case LEVEL:
+    next_level();
+    *(volatile u16 *)(IO_REG + DISPCNT) =
+      ( DISPCNT__BG0
+      | DISPCNT__BG1
+      | DISPCNT__BG2
+      | DISPCNT__OBJ
+      | DISPCNT__OBJ_1_DIMENSION
+      | DISPCNT__BG_MODE_0
+      );
+    break;
+  default:
+    break;
+  }
+}
+
+static u32 wait_for = 0;
+
+static void wait_for_a()
+{
+  u32 key_input = ~(*(volatile u16 *)(IO_REG + KEY_INPUT));
+
+  if (key_input & KEYCNT__INPUT_A) {
+    if (!(wait_for & KEYCNT__INPUT_A))
+      next_state();
+    wait_for |= KEYCNT__INPUT_A;
+  } else {
+    wait_for &= ~KEYCNT__INPUT_A;
+  }
+}
+
+static void game_step()
 {
   log_step(&pathable[0], &interactable[0]);
 
@@ -153,7 +235,7 @@ void game_step()
       level_counter_decrement(_q, _r, &visited[0], &unvisited_count);
 
       if (unvisited_count == 0)
-        next_level();
+        next_state();
     } else if ((dx != 0 || dy != 0) && (!dx != !dy)) {
       const u32 _q = penguin_q + dx;
       const u32 _r = penguin_r + dy;
@@ -175,7 +257,17 @@ void _user_isr(void)
     music_step();
   } else {
     ireq = IE__V_BLANK;
-    game_step();
+    switch (state) {
+    case TITLE:
+    case PRE_LEVEL:
+      wait_for_a();
+      break;
+    case LEVEL:
+      game_step();
+      break;
+    default:
+      break;
+    }
   }
 
   /* */
@@ -196,10 +288,7 @@ void _main(void)
 
   obj_init();
   glyph_init();
-  next_level();
-
   path_debug_init(); // palette 1, screen 30+29
-
   music_init();
 
   /* initialize graph_path with -1 */
@@ -237,16 +326,6 @@ void _main(void)
     | BG_CNT__PRIORITY(0)
     );
 
-  *(volatile u16 *)(IO_REG + DISPCNT) =
-    ( DISPCNT__BG0
-    | DISPCNT__BG1
-    | DISPCNT__BG2
-    | DISPCNT__BG3
-    | DISPCNT__OBJ
-    | DISPCNT__OBJ_1_DIMENSION
-    | DISPCNT__BG_MODE_0
-    );
-
   *(volatile u32 *)(IWRAM_USER_ISR) = (u32)(&_user_isr);
 
   *(volatile u16 *)(IO_REG + DISPSTAT) = DISPSTAT__V_BLANK_INT_ENABLE;
@@ -264,6 +343,13 @@ void _main(void)
     | IE__TIMER_0
     );
   *(volatile u16 *)(IO_REG + IF) = (u16)-1;
+
+  //
+
+  next_state();
+
+  //
+
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
   while (1) {
