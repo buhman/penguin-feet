@@ -30,7 +30,15 @@ def graph_nbit(data: bytes, nbits: int) -> list[int]:
         #assert b < (2 ** (nbits - reserved_bits)), (b, (2 ** (nbits - reserved_bits)))
         np = int(not_pathable[b])
         tr = int(trackable[b])
-        nib = (np << 3) | (tr << 2) | (b & 0x3)
+        color = (b & 0x7)
+        if color == 3:
+            color = 0
+        elif color == 2:
+            color = 1
+        elif color == 5:
+            color = 3
+        color = color & 0x3
+        nib = (np << 3) | (tr << 2) | color
         #print(i % 32, i // 32, (i * nbits) // 32, ((i * nbits) % 32))
         #print(" ", bin((nib << ((i * nbits) % 32))))
         graph[(i * nbits) // 32] |= (nib << ((i * nbits) % 32))

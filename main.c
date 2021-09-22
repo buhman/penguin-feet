@@ -80,7 +80,7 @@ typedef enum {
   LAST_STATE
 } state_t;
 
-static state_t state = ZERO;
+static state_t state = PRE_LEVEL;
 
 static state_t transitions[LAST_STATE] = {
   [ZERO] = TITLE,
@@ -89,7 +89,7 @@ static state_t transitions[LAST_STATE] = {
   [LEVEL] = PRE_LEVEL,
 };
 
-static s8 level = -1;
+static s8 level = 0;
 
 static void next_level(void)
 {
@@ -104,11 +104,11 @@ static void next_level(void)
 
 #define ARRAY_LENGTH(_a) ((sizeof (_a)) / (sizeof ((_a)[0])))
 
-static u8 animals[] = {36, 49, 44, 48, 36, 47, 54};
+static u8 penguin_feet[] = {51, 40, 49, 42, 56, 44, 49, 255, 41, 40, 40, 55};
 
-// use your footprints
+// use your feet
 static u8 level0_0[] =
-  {30, 28, 14, 255, 34, 24, 30, 27, 255, 15, 24, 24, 29, 25, 27, 18, 23, 29, 28};
+  {30, 28, 14, 255, 34, 24, 30, 27, 255, 15, 14, 14, 29};
 // fill the path
 static u8 level0_1[] =
   {15, 18, 21, 21, 255, 29, 17, 14, 255, 25, 10, 29, 17};
@@ -146,7 +146,7 @@ _next_state:
 
   switch (state) {
   case TITLE:
-    glyph_draw_line(2, animals, ARRAY_LENGTH(animals));
+    glyph_draw_line(2, penguin_feet, ARRAY_LENGTH(penguin_feet));
 
     *(volatile u16 *)(IO_REG + DISPCNT) =
       ( DISPCNT__BG3
