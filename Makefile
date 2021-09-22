@@ -25,6 +25,9 @@ endef
 %.dfreq.o: %.dfreq
 	$(BUILD_BINARY_O)
 
+%.glyph.o: %.glyph
+	$(BUILD_BINARY_O)
+
 %.character: %.data
 	python pack/character.py $< $(basename $<).dim $@
 
@@ -33,6 +36,9 @@ endef
 
 %.level: %.data
 	python pack/level.py $< $@
+
+%.glyph: %.data
+	python pack/glyph.py $< $@
 
 maze_tile_%.character: maze_tile_%.data
 	python pack/character.py $< $(@D)/maze_tile.dim $@
@@ -78,6 +84,8 @@ MUSIC_OBJ = music/gba_sketch_02v2__part_P1_voice_1.dfreq.o
 MUSIC_OBJ += music/gba_sketch_02v2__part_P1_voice_5.dfreq.o
 MUSIC_OBJ += music/gba_sketch_02v2__part_P2_voice_1.dfreq.o
 
+GLYPH_OBJ += glyph/bizcat.glyph.o
+
 OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o actor.o
 OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o $(LEVEL_OBJ)
@@ -86,6 +94,7 @@ OBJS += footprint.o $(FOOTPRINT_OBJ)
 OBJS += log.o $(LOG_OBJ)
 OBJS += music.o $(MUSIC_OBJ)
 OBJS += bee.o
+OBJS += glyph.o $(GLYPH_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
 	$(LINK_ELF)

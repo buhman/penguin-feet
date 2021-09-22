@@ -16,3 +16,12 @@ void fill_16(void * dest, unsigned short c, unsigned int n)
     n -= 2;
   }
 }
+
+void fill_32(void * dest, unsigned int c, unsigned int n)
+{
+  while (n > 1) {
+    *((unsigned int *)dest) = c;
+    dest += 4;
+    n -= 4;
+  }
+}

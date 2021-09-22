@@ -6,5 +6,6 @@
 *.sav
 *.character
 *.palette
+*.glyph
 test/*.dot
 test/*.svg

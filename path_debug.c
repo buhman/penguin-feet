@@ -3,6 +3,7 @@
 #include "register.h"
 #include "color.h"
 #include "copy16.h"
+#include "character.h"
 
 #include "ucs.h"
 #include "heap.h"
@@ -24,12 +25,8 @@ void path_debug_init(void)
 }
 
 void path_debug_update(const value_t source, const value_t target,
-                       const u32 screen, const value_t * path)
+                       const value_t * path)
 {
-  fill_16((void *)(VRAM + SCREEN_BASE_BLOCK(screen)),
-          0,
-          SCREEN_BASE_BLOCK_LENGTH);
-
   value_t w = target;
   while (w != (value_t)-1) {
     u32 w_x = w & 31;
@@ -39,7 +36,7 @@ void path_debug_update(const value_t source, const value_t target,
                 w == source ? 3 :
                 2;
 
-    ((volatile u16 *)(VRAM + SCREEN_BASE_BLOCK(screen)))[w_y * 32 + w_x] =
+    ((volatile u16 *)(VRAM + SCREEN_BASE_BLOCK(PATH_DEBUG_SCREEN_BASE_BLOCK)))[w_y * 32 + w_x] =
       ( SCREEN_TEXT__PALETTE(1)
       | color
       );

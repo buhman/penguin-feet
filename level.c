@@ -63,7 +63,7 @@ void level_init(const u32 level, u32 * pathable, u32 * printable)
 
       ((volatile u16 *)(VRAM + SCREEN_BASE_BLOCK(LEVEL_SCREEN_BASE_BLOCK)))[y32 + x] =
         ( SCREEN_TEXT__PALETTE(LEVEL_PALETTE)
-        | ((nib & 0xf) == 0b1001 ? 5 : ((nib & 0x3) + 1))
+        | (LEVEL_CHARACTER_OFFSET + ((nib & 0xf) == 0b1001 ? 5 : ((nib & 0x3) + 1)))
         );
 
       pathable[y] |= ((nib >> 3) & 1) << x;

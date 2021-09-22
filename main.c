@@ -1,25 +1,24 @@
-#include "base.h"
-#include "register.h"
-
-#include "palette.h"
-#include "tile.h"
-
-#include "level.h"
-#include "obj.h"
+#include "actor.h"
 #include "background.h"
-#include "graph.h"
-#include "path_debug.h"
-#include "type.h"
-#include "footprint.h"
+#include "base.h"
+#include "bee.h"
+#include "character.h"
 #include "copy16.h"
+#include "footprint.h"
+#include "graph.h"
+#include "heap.h"
+#include "interactable.h"
+#include "level.h"
 #include "log.h"
 #include "music.h"
-#include "interactable.h"
-#include "actor.h"
-#include "bee.h"
-
+#include "obj.h"
+#include "palette.h"
+#include "path_debug.h"
+#include "register.h"
+#include "tile.h"
+#include "type.h"
 #include "ucs.h"
-#include "heap.h"
+#include "glyph.h"
 
 static value_t path[UCS_GRAPH_AREA];
 static u32 pathable[32];
@@ -44,8 +43,6 @@ static actor_t penguin = {
   .neg.q = 0,
   .neg.r = 0,
 };
-
-static u8 debug_screen = 30;
 
 #define IN_BOUNDS(_q, _r) ((_q) >= 0 && (_q) <= 31 && (_r) >= 0 && (_r) <= 31)
 
@@ -82,32 +79,9 @@ static void next_level(void)
   log_init(&pathable[0], &interactable[0]);
 }
 
-
-void _user_isr(void)
+void game_step()
 {
-  *(volatile u16 *)(IO_REG + IME) = 0;
-
-  u32 ireq = *(volatile u16 *)(IO_REG + IF);
-  if ((ireq & IE__TIMER_0) != 0) {
-    ireq = IE__TIMER_0;
-
-    music_step();
-    goto _end;
-  }
-  else
-    ireq = IE__V_BLANK;
-
   log_step(&pathable[0], &interactable[0]);
-
-  /* */
-
-  *(volatile u16 *)(IO_REG + BG1CNT) =
-    ( BG_CNT__COLOR_16_16
-    | BG_CNT__SCREEN_SIZE(0)
-    | BG_CNT__CHARACTER_BASE_BLOCK(1)
-    | BG_CNT__SCREEN_BASE_BLOCK(debug_screen)
-    | BG_CNT__PRIORITY(0)
-    );
 
   /* */
 
@@ -118,7 +92,7 @@ void _user_isr(void)
 
   value_t source = UCS_QR_VALUE(penguin_q, penguin_r);
   ucs(&pathable[0], source, &path[0]);
-  debug_screen = (u8)bee_step(source, &path[0]);
+  bee_step(source, &path[0]);
 
   s8 dx;
   s8 dy;
@@ -189,9 +163,22 @@ void _user_isr(void)
       }
     }
   }
+}
+
+void _user_isr(void)
+{
+  *(volatile u16 *)(IO_REG + IME) = 0;
+
+  u32 ireq = *(volatile u16 *)(IO_REG + IF);
+  if ((ireq & IE__TIMER_0) != 0) {
+    ireq = IE__TIMER_0;
+    music_step();
+  } else {
+    ireq = IE__V_BLANK;
+    game_step();
+  }
 
   /* */
-_end:
   *(volatile u16 *)(IO_REG + IF) = ireq;
   *(volatile u16 *)(IO_REG + IME) = IME__INT_MASTER_ENABLE;
 
@@ -208,9 +195,9 @@ void _main(void)
           (8 * 8 / 2));
 
   obj_init();
+  glyph_init();
   next_level();
 
-  //background_init();
   path_debug_init(); // palette 1, screen 30+29
 
   music_init();
@@ -223,7 +210,7 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(LEVEL_CHARACTER_BASE_BLOCK)
     | BG_CNT__SCREEN_BASE_BLOCK(LEVEL_SCREEN_BASE_BLOCK)
-    | BG_CNT__PRIORITY(2)
+    | BG_CNT__PRIORITY(3)
     );
 
   *(volatile u16 *)(IO_REG + BG1CNT) =
@@ -231,7 +218,7 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(1)
     | BG_CNT__SCREEN_BASE_BLOCK(30)
-    | BG_CNT__PRIORITY(0)
+    | BG_CNT__PRIORITY(1)
     );
 
   *(volatile u16 *)(IO_REG + BG2CNT) =
@@ -239,13 +226,22 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(FOOTPRINT_CHARACTER_BASE_BLOCK)
     | BG_CNT__SCREEN_BASE_BLOCK(FOOTPRINT_SCREEN_BASE_BLOCK)
-    | BG_CNT__PRIORITY(1)
+    | BG_CNT__PRIORITY(2)
+    );
+
+  *(volatile u16 *)(IO_REG + BG3CNT) =
+    ( BG_CNT__COLOR_16_16
+    | BG_CNT__SCREEN_SIZE(0)
+    | BG_CNT__CHARACTER_BASE_BLOCK(GLYPH_CHARACTER_BASE_BLOCK)
+    | BG_CNT__SCREEN_BASE_BLOCK(GLYPH_SCREEN_BASE_BLOCK)
+    | BG_CNT__PRIORITY(0)
     );
 
   *(volatile u16 *)(IO_REG + DISPCNT) =
     ( DISPCNT__BG0
     | DISPCNT__BG1
     | DISPCNT__BG2
+    | DISPCNT__BG3
     | DISPCNT__OBJ
     | DISPCNT__OBJ_1_DIMENSION
     | DISPCNT__BG_MODE_0
