@@ -1,16 +1,7 @@
-"Passacaglia" (Public Domain)
-  Composed by Handel + Halvorsen
-  Translated to "dfreq" by pack/score.py
-
-  - passacaglia_voice_1.dfreq
-  - passacaglia_voice_2.dfreq
-
 "GBA sketch 02" (CC BY 4.0)
   Composed by Aaron Fryklund
   Translated to "dfreq" by pack/score.py
 
   Included with permission
 
-  - sketch_part_P1_voice_1.dfreq
-  - sketch_part_P1_voice_5.dfreq
-  - sketch_part_P2_voice_1.dfreq
+  - music/gba_sketch_02v2.musicxml

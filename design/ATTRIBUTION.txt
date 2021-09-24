@@ -1,0 +1,25 @@
+"GBA BG" (CC BY 4.0)
+  Drawn by Tak_2
+
+  Included with permission
+
+  - design/GBA_BG.xcf
+
+"penguin" (CC BY 4.0)
+  Drawn by kboop
+
+  Included with permission
+
+  - design/penguin.xcf
+
+"bizcat" (CC BY 4.0)
+  Authored by Robey Pointer
+
+  - design/bizcat.xcf
+
+all others (CC BY 4.0)
+  Drawn by buhman
+
+  Included with permission
+
+  - design/*
