@@ -80,7 +80,7 @@ typedef enum {
   LAST_STATE
 } state_t;
 
-static state_t state = PRE_LEVEL;
+static state_t state = ZERO;
 
 static state_t transitions[LAST_STATE] = {
   [ZERO] = TITLE,
@@ -89,7 +89,7 @@ static state_t transitions[LAST_STATE] = {
   [LEVEL] = PRE_LEVEL,
 };
 
-static s8 level = 0;
+static s8 level = -1;
 
 static void next_level(void)
 {
@@ -383,7 +383,7 @@ void _main(void)
 
   *(volatile u16 *)(IO_REG + TM0CNT_H) =
     ( TM_CNT_H__ENABLE
-    //| TM_CNT_H__INT_ENABLE
+    | TM_CNT_H__INT_ENABLE
     | TM_CNT_H__PRESCALAR_64
     );
 
