@@ -200,6 +200,9 @@ static void wait_for_a()
   }
 }
 
+static u8 ucs_last_q = (u8)-1;
+static u8 ucs_last_r = (u8)-1;
+
 static void game_step()
 {
   log_step(&pathable[0], &interactable[0]);
@@ -212,7 +215,11 @@ static void game_step()
   u32 penguin_r = (penguin.y >> 3) + (penguin.neg.r && (penguin.y & 0b111));
 
   value_t source = UCS_QR_VALUE(penguin_q, penguin_r);
-  ucs(&pathable[0], source, &path[0]);
+  if (ucs_last_q != penguin_q || ucs_last_r != penguin_r) {
+    ucs(&pathable[0], source, &path[0]);
+    ucs_last_q = penguin_q;
+    ucs_last_r = penguin_r;
+  }
   bee_step(source, &path[0]);
 
   s8 dx;
