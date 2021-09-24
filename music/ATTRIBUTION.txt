@@ -1,7 +1,0 @@
-"GBA sketch 02" (CC BY 4.0)
-  Composed by Aaron Fryklund
-  Translated to "dfreq" by pack/score.py
-
-  Included with permission
-
-  - music/gba_sketch_02v2.musicxml
