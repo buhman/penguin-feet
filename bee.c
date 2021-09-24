@@ -20,9 +20,7 @@ static actor_t bee = {
 
 static value_t target = (value_t)-1;
 
-static u8 step = 0;
-
-void bee_step(const value_t source, const value_t * path)
+void bee_step(const value_t source, const value_t * path, u32 * q_out, u32 * r_out)
 {
   obj_update(OBJ_BEE_ATTRIBUTE, bee.x, bee.y);
 
@@ -36,11 +34,10 @@ void bee_step(const value_t source, const value_t * path)
     target = path[w];
   }
 
-  if (step == 2) {
-    step = 0;
-    if (target != (value_t)-1) {
-      actor_move_fpath(bee_q, bee_r, target, &bee);
-    }
+  if (target != (value_t)-1) {
+    actor_move_fpath(bee_q, bee_r, target, &bee);
   }
-  step++;
+
+  *q_out = bee_q;
+  *r_out = bee_r;
 }

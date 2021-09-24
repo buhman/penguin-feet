@@ -80,7 +80,7 @@ typedef enum {
   LAST_STATE
 } state_t;
 
-static state_t state = TITLE;
+static state_t state = PRE_LEVEL;
 
 static state_t transitions[LAST_STATE] = {
   [ZERO] = TITLE,
@@ -89,7 +89,7 @@ static state_t transitions[LAST_STATE] = {
   [LEVEL] = PRE_LEVEL,
 };
 
-static s8 level = -1;
+static s8 level = 0;
 
 static void next_level(void)
 {
@@ -200,8 +200,8 @@ static void wait_for_a()
   }
 }
 
-static u8 ucs_last_q = (u8)-1;
-static u8 ucs_last_r = (u8)-1;
+//static u8 ucs_last_q = (u8)-1;
+//static u8 ucs_last_r = (u8)-1;
 
 static void game_step()
 {
@@ -215,12 +215,16 @@ static void game_step()
   u32 penguin_r = (penguin.y >> 3) + (penguin.neg.r && (penguin.y & 0b111));
 
   value_t source = UCS_QR_VALUE(penguin_q, penguin_r);
-  if (ucs_last_q != penguin_q || ucs_last_r != penguin_r) {
+  //if (ucs_last_q != penguin_q || ucs_last_r != penguin_r) {
     ucs(&pathable[0], source, &path[0]);
-    ucs_last_q = penguin_q;
-    ucs_last_r = penguin_r;
-  }
-  bee_step(source, &path[0]);
+    //ucs_last_q = penguin_q;
+    //ucs_last_r = penguin_r;
+  //}
+  u32 bee_q;
+  u32 bee_r;
+  bee_step(source, &path[0], &bee_q, &bee_r);
+  if (bee_q == penguin_q && bee_r == penguin_r)
+    level_reset_penguin(level, &penguin);
 
   s8 dx;
   s8 dy;
