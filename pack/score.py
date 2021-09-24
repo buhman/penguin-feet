@@ -152,7 +152,7 @@ def as_n(freq: float) -> int:
 
 def _key(octave, step, alter):
     sign = "b" if alter == -1 else "#" if alter == 1 else ""
-    return f"{step}{sign}{octave}"
+    return "{step}{sign}{octave}".format(step=step, sign=sign, octave=octave)
 
 
 def parse_note(measure_number, note, x_offset):
@@ -238,7 +238,7 @@ def main():
 
     prefix = sys.argv[2]
     for k, v in voices.items():
-        fn = f"{prefix}_part_{k[0]}_voice_{k[1]}.dfreq"
+        fn = "{prefix}_part_{k_0}_voice_{k_1}.dfreq".format(prefix=prefix, k_0=k[0], k_1=k[1])
         print(fn)
         with open(fn, "wb") as f:
             for duration, frequency in v:

@@ -1,4 +1,4 @@
-all: animals.gba
+all: penguin-feet.gba
 
 .PRECIOUS: %.character %.palette
 
@@ -10,7 +10,7 @@ define BUILD_BINARY_O
 endef
 
 define LINK_ELF
-	$(LD) --print-memory-usage -Map=$@.map -T animals.lds $^ -o $@
+	$(LD) --print-memory-usage -Map=$@.map -T penguin-feet.lds $^ -o $@
 endef
 
 %.palette.o: %.palette
@@ -101,17 +101,17 @@ OBJS += bee.o
 OBJS += glyph.o $(GLYPH_OBJ)
 OBJS += background.o $(GBA_BG_OBJ)
 
-animals.elf: $(OBJS) | animals.lds
+penguin-feet.elf: $(OBJS) | penguin-feet.lds
 	$(LINK_ELF)
 
 GPIO_OBJS = header.o load.o demo/main_gpio.o
-gpio.elf: $(GPIO_OBJS) | animals.lds
+gpio.elf: $(GPIO_OBJS) | penguin-feet.lds
 	$(LINK_ELF)
 
 SAWTOOTH_OBJS = header.o load.o demo/main_sawtooth.o
-sawtooth.elf: $(SAWTOOTH_OBJS) | animals.lds
+sawtooth.elf: $(SAWTOOTH_OBJS) | penguin-feet.lds
 	$(LINK_ELF)
 
-deploy: animals.gba
+deploy: penguin-feet.gba
 
 include common.mk
