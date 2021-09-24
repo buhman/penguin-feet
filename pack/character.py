@@ -60,8 +60,8 @@ def decode_data():
     dimensions = tuple([int(i) for i in data_dim.strip().split()])
     assert len(dimensions) == 2
     size = dimensions[0] * dimensions[1]
-    assert dimensions[0] in oam_valid_dimensions
-    assert dimensions[1] in oam_valid_dimensions
+    #assert dimensions[0] in oam_valid_dimensions
+    #assert dimensions[1] in oam_valid_dimensions
     assert len(data) // 2 == size, (len(data) // 2, size)
 
     oam_vram = bytearray(0x8000) # 32k

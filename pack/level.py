@@ -36,8 +36,10 @@ def graph_nbit(data: bytes, nbits: int) -> list[int]:
         elif color == 2:
             color = 1
         elif color == 5:
+            color = 2
+        if color == 1:
             color = 3
-        color = color & 0x3
+        color = (color + 1) & 0x3
         nib = (np << 3) | (tr << 2) | color
         #print(i % 32, i // 32, (i * nbits) // 32, ((i * nbits) % 32))
         #print(" ", bin((nib << ((i * nbits) % 32))))

@@ -8,6 +8,16 @@ void copy_16(void * dest, void * src, unsigned int n)
   }
 }
 
+void copy_32(void * dest, void * src, unsigned int n)
+{
+  while (n > 1) {
+    *((unsigned int *)dest) = *((unsigned int *)src);
+    dest += 4;
+    src += 4;
+    n -= 4;
+  }
+}
+
 void fill_16(void * dest, unsigned short c, unsigned int n)
 {
   while (n > 1) {

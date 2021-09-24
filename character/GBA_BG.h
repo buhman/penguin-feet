@@ -1,0 +1,5 @@
+extern unsigned int _binary_character_GBA_BG_palette_start;
+extern unsigned int _binary_character_GBA_BG_palette_size;
+
+extern unsigned int _binary_character_GBA_BG_character_start;
+extern unsigned int _binary_character_GBA_BG_character_size;

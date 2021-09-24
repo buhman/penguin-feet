@@ -87,6 +87,9 @@ MUSIC_OBJ += music/gba_sketch_02v2__part_P2_voice_1.dfreq.o
 
 GLYPH_OBJ += glyph/bizcat.glyph.o
 
+GBA_BG_OBJ = character/GBA_BG.palette.o
+GBA_BG_OBJ += character/GBA_BG.character.o
+
 OBJS = header.o load.o main.o palette.o tile.o copy16.o interactable.o actor.o
 OBJS += path_debug.o ucs.o min_heap.o
 OBJS += level.o $(LEVEL_OBJ)
@@ -96,6 +99,7 @@ OBJS += log.o $(LOG_OBJ)
 OBJS += music.o $(MUSIC_OBJ)
 OBJS += bee.o
 OBJS += glyph.o $(GLYPH_OBJ)
+OBJS += background.o $(GBA_BG_OBJ)
 
 animals.elf: $(OBJS) | animals.lds
 	$(LINK_ELF)

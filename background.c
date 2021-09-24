@@ -1,28 +1,28 @@
+#include "type.h"
 #include "base.h"
 #include "register.h"
 
 #include "copy16.h"
 #include "background.h"
-#include "character/background.h"
+#include "character.h"
+#include "character/GBA_BG.h"
 
 void background_init(void)
 {
-  copy_16((void *)(PRAM_BG + PRAM_PALETTE(1)),
-          (void *)&_binary_character_background_palette_start,
-          (unsigned int)&_binary_character_background_palette_size);
+  copy_32((void *)(PRAM_BG + PRAM_PALETTE(BACKGROUND_PALETTE) + 2),
+          (void *)&_binary_character_GBA_BG_palette_start,
+          (u32)&_binary_character_GBA_BG_palette_size);
 
-  copy_16((void *)(VRAM + CHARACTER_BASE_BLOCK(1) + 32),
-          (void *)&_binary_character_background_character_start,
-          (unsigned int)&_binary_character_background_character_size);
+  copy_32((void *)( VRAM
+                  + CHARACTER_BASE_BLOCK(BACKGROUND_CHARACTER_BASE_BLOCK)
+                  + BACKGROUND_CHARACTER_BLOCK_OFFSET),
+          (void *)&_binary_character_GBA_BG_character_start,
+          (u32)&_binary_character_GBA_BG_character_size);
 
-  for (int y = 0; y < 20; y++) {
-    for (int x = 0; x < 30; x++) {
-      *(unsigned short *)(VRAM + SCREEN_BASE_BLOCK(30) + (x * 2) + (y * 32 * 2))
-        = SCREEN_TEXT__PALETTE(1)
-        | 1
-        | (x & 1 ? SCREEN_TEXT__H_FLIP : 0)
-        | (y & 1 ? SCREEN_TEXT__V_FLIP : 0)
-        ;
-    }
+  for (int i = 0; i < (32 * 32); i++) {
+    *(u16 *)(VRAM + SCREEN_BASE_BLOCK(BACKGROUND_SCREEN_BASE_BLOCK) + i * 2)
+      = SCREEN_TEXT__PALETTE(BACKGROUND_PALETTE)
+      | (BACKGROUND_CHARACTER_OFFSET + i)
+      ;
   }
 }

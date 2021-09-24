@@ -28,6 +28,7 @@ def pack_palette():
         pack_color(data_pal, palette_ram, color)
 
     colors += 1 # allocate transparent color #0
+    assert colors <= 16, colors
 
     with open(filename.dest, "wb") as f:
         f.write(palette_ram[:colors * 2])

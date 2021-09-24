@@ -61,10 +61,9 @@ void level_reset_penguin(const u32 level, actor_t * penguin)
 
 void level_init(const u32 level, u32 * pathable, u32 * printable)
 {
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 2) = RGB15(31, 31, 31); // white
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 4) = RGB15(31, 30, 20); // yellow
-  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 8) = RGB15(8, 12, 8); // black
-  //*(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 6) = RGB15(23, 31, 23); // green
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 2) = RGB15(31, 28, 15); // white
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 4) = RGB15(8, 12, 8); // black
+  *(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 6) = RGB15(31, 23, 12); // orange
   //*(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 8) = RGB15( 0, 22, 24);  // teal
   //*(volatile u16 *)(PRAM_BG + PRAM_PALETTE(LEVEL_PALETTE) + 10) = RGB15( 4, 4, 4); // black
 
@@ -95,7 +94,7 @@ void level_init(const u32 level, u32 * pathable, u32 * printable)
 
       ((volatile u16 *)(VRAM + SCREEN_BASE_BLOCK(LEVEL_SCREEN_BASE_BLOCK)))[y32 + x] =
         ( SCREEN_TEXT__PALETTE(LEVEL_PALETTE)
-        | (LEVEL_CHARACTER_OFFSET + ((nib & 0x3) + 1))
+        | (LEVEL_CHARACTER_OFFSET + (nib & 0x3))
         );
 
       pathable[y] |= ((nib >> 3) & 1) << x;

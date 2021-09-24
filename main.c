@@ -80,7 +80,7 @@ typedef enum {
   LAST_STATE
 } state_t;
 
-static state_t state = PRE_LEVEL;
+static state_t state = TITLE;
 
 static state_t transitions[LAST_STATE] = {
   [ZERO] = TITLE,
@@ -89,7 +89,7 @@ static state_t transitions[LAST_STATE] = {
   [LEVEL] = PRE_LEVEL,
 };
 
-static s8 level = 0;
+static s8 level = -1;
 
 static void next_level(void)
 {
@@ -318,8 +318,6 @@ void _user_isr(void)
 
 void _main(void)
 {
-  //maze_init();
-
   // transparency character
   fill_16((void *)(VRAM + CHARACTER_BASE_BLOCK(0)),
           0,
@@ -329,6 +327,7 @@ void _main(void)
   glyph_init();
   path_debug_init(); // palette 1, screen 30+29
   music_init();
+  background_init();
 
   /* initialize graph_path with -1 */
   ucs((void *)0, (value_t)-1, &path[0]);
@@ -338,15 +337,15 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(LEVEL_CHARACTER_BASE_BLOCK)
     | BG_CNT__SCREEN_BASE_BLOCK(LEVEL_SCREEN_BASE_BLOCK)
-    | BG_CNT__PRIORITY(3)
+    | BG_CNT__PRIORITY(1)
     );
 
   *(volatile u16 *)(IO_REG + BG1CNT) =
     ( BG_CNT__COLOR_16_16
     | BG_CNT__SCREEN_SIZE(0)
-    | BG_CNT__CHARACTER_BASE_BLOCK(1)
-    | BG_CNT__SCREEN_BASE_BLOCK(30)
-    | BG_CNT__PRIORITY(1)
+    | BG_CNT__CHARACTER_BASE_BLOCK(BACKGROUND_CHARACTER_BASE_BLOCK)
+    | BG_CNT__SCREEN_BASE_BLOCK(BACKGROUND_SCREEN_BASE_BLOCK)
+    | BG_CNT__PRIORITY(2)
     );
 
   *(volatile u16 *)(IO_REG + BG2CNT) =
@@ -354,7 +353,7 @@ void _main(void)
     | BG_CNT__SCREEN_SIZE(0)
     | BG_CNT__CHARACTER_BASE_BLOCK(FOOTPRINT_CHARACTER_BASE_BLOCK)
     | BG_CNT__SCREEN_BASE_BLOCK(FOOTPRINT_SCREEN_BASE_BLOCK)
-    | BG_CNT__PRIORITY(2)
+    | BG_CNT__PRIORITY(0)
     );
 
   *(volatile u16 *)(IO_REG + BG3CNT) =
