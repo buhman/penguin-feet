@@ -43,14 +43,3 @@ penguin-feet is known to work well on at least:
 penguin-feet is known to be completely non-functional on:
 
 - Virtual Console (Nintendo 3DS)
-
-Prior work
-----------
-
-The "registers.h" file from the penguin-feet repository is a derivative of "regs.h" from
-
-https://github.com/buhman/snake-gba/tree/3d60b59/regs.h
-
-This means work on "registers.h" from penguin-feet started prior to the start date of the game jam.
-
-All other files were authored after the start of the jam.
