@@ -233,9 +233,23 @@
 #define SOUNDCNT_L__OUTPUT_LEVEL_R(n) ((n) << 0)
 
 #define SOUNDCNT_H 0x082
-#define SOUNDCNT_H__OUTPUT_RATIO_QUARTER (0)
-#define SOUNDCNT_H__OUTPUT_RATIO_HALF (1)
-#define SOUNDCNT_H__OUTPUT_RATIO_FULL (2)
+#define SOUNDCNT_H__OUTPUT_1234_RATIO_QUARTER (0 << 0)
+#define SOUNDCNT_H__OUTPUT_1234_RATIO_HALF    (1 << 0)
+#define SOUNDCNT_H__OUTPUT_1234_RATIO_FULL    (2 << 0)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_RATIO_HALF  (0 << 2)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_RATIO_FULL  (1 << 2)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_RATIO_HALF  (0 << 2)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_RATIO_FULL  (1 << 2)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_L (1 << 8)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_R (1 << 9)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_TIMER0 (0 << 10)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_TIMER1 (1 << 10)
+#define SOUNDCNT_H__OUTPUT_SOUNDA_RESET  (1 << 11)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_L (1 << 12)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_R (1 << 13)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_TIMER0 (0 << 14)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_TIMER1 (1 << 14)
+#define SOUNDCNT_H__OUTPUT_SOUNDB_RESET  (1 << 15)
 
 #define SOUNDCNT_X 0x084
 #define SOUNDCNT_X__ENABLE (1 << 7)
@@ -243,6 +257,17 @@
 #define SOUNDCNT_X__ENABLE_2 (1 << 1)
 #define SOUNDCNT_X__ENABLE_3 (1 << 2)
 #define SOUNDCNT_X__ENABLE_4 (1 << 3)
+
+#define SOUNDBIAS 0x88
+#define SOUNDBIAS__RESOLUTION_9BIT (0 << 14)
+#define SOUNDBIAS__RESOLUTION_8BIT (1 << 14)
+#define SOUNDBIAS__RESOLUTION_7BIT (2 << 14)
+#define SOUNDBIAS__RESOLUTION_6BIT (3 << 14)
+
+#define FIFO_A_L 0x0a0
+#define FIFO_A_H 0x0a2
+#define FIFO_B_L 0x0a4
+#define FIFO_B_H 0x0a6
 
 /* timers */
 
@@ -263,29 +288,56 @@
 #define TM_CNT_H__PRESCALAR_256 (2)
 #define TM_CNT_H__PRESCALAR_1024 (3)
 
-/* dma */
+/* 12.1 DMA 0 */
 #define DMA0_SAD_L 0x0b0 /* source address */
 #define DMA0_SAD_H 0x0b2
+
 #define DMA0_DAD_L 0x0b4 /* destination address */
 #define DMA0_DAD_H 0x0b6
 
 #define DMA0_CNT_L 0x0b8 /* word count */
+
 #define DMA0_CNT_H 0x0ba /* control */
-#define DMA0_CNT_H__ENABLE (1 << 15)
-#define DMA0_CNT_H__INT_ENABLE (1 << 14)
-#define DMA0_CNT_H__START_IMMEDIATE (0 << 12)
-#define DMA0_CNT_H__START_V_BLANK (1 << 12)
-#define DMA0_CNT_H__START_H_BLANK (2 << 12)
-#define DMA0_CNT_H__WORD_16_BIT (0 << 10)
-#define DMA0_CNT_H__WORD_32_BIT (1 << 10)
-#define DMA0_CNT_H__BLANK_REPEAT (1 << 9)
-#define DMA0_CNT_H__SRC_INCREMENT (0 << 7)
-#define DMA0_CNT_H__SRC_DECREMENT (1 << 7)
-#define DMA0_CNT_H__SRC_FIXED (2 << 7)
-#define DMA0_CNT_H__DST_INCREMENT (0 << 5)
-#define DMA0_CNT_H__DST_DECREMENT (1 << 5)
-#define DMA0_CNT_H__DST_FIXED (2 << 5)
-#define DMA0_CNT_H__DST_RELOAD (3 << 5)
+
+/* 12.2 DMA 1 */
+#define DMA1_SAD_L 0x0bc /* source address */
+#define DMA1_SAD_H 0x0be
+
+#define DMA1_DAD_L 0x0c0 /* destination address */
+#define DMA1_DAD_H 0x0c2
+
+#define DMA1_CNT_L 0x0c4 /* word count */
+
+#define DMA1_CNT_H 0x0c6 /* control */
+
+/* 12.2 DMA 2 */
+#define DMA2_SAD_L 0x0c8 /* source address */
+#define DMA2_SAD_H 0x0ca
+
+#define DMA2_DAD_L 0x0cc /* destination address */
+#define DMA2_DAD_H 0x0ce
+
+#define DMA2_CNT_L 0x0d0 /* word count */
+
+#define DMA2_CNT_H 0x0d2 /* control */
+
+/* DMA control */
+#define DMAn_CNT_H__ENABLE (1 << 15)
+#define DMAn_CNT_H__INT_ENABLE (1 << 14)
+#define DMAn_CNT_H__START_IMMEDIATE (0 << 12)
+#define DMAn_CNT_H__START_V_BLANK (1 << 12)
+#define DMAn_CNT_H__START_H_BLANK (2 << 12)
+#define DMAn_CNT_H__START_SOUND_FIFO (3 << 12) /* DMA{1,2} only */
+#define DMAn_CNT_H__WORD_16_BIT (0 << 10)
+#define DMAn_CNT_H__WORD_32_BIT (1 << 10)
+#define DMAn_CNT_H__REPEAT (1 << 9)
+#define DMAn_CNT_H__SRC_INCREMENT (0 << 7)
+#define DMAn_CNT_H__SRC_DECREMENT (1 << 7)
+#define DMAn_CNT_H__SRC_FIXED (2 << 7)
+#define DMAn_CNT_H__DST_INCREMENT (0 << 5)
+#define DMAn_CNT_H__DST_DECREMENT (1 << 5)
+#define DMAn_CNT_H__DST_FIXED (2 << 5)
+#define DMAn_CNT_H__DST_RELOAD (3 << 5)
 
 /* 16 Power Down */
 #define HALTCNT 0x301 /* 1 byte */

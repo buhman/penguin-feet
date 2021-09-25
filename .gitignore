@@ -4,6 +4,7 @@
 *.elf
 *.elf.*
 *.sav
+*.level
 *.character
 *.palette
 *.glyph

@@ -58,5 +58,6 @@ SECTIONS
     *(.data.level*)
     *(.data.music*)
     *(.data.glyph*)
+    *(.data.pcm*)
   } > gprom
 }

@@ -35,7 +35,7 @@ clean:
 
 deploy:
 	mount /dev/disk/by-label/GBA /mnt
-	cp $< /mnt/$<
+	cp $< /mnt/$(notdir $<)
 	umount /mnt
 	sync
 

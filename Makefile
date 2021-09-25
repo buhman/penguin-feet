@@ -1,6 +1,6 @@
 all: penguin-feet.gba
 
-.PRECIOUS: %.character %.palette
+.SECONDARY:
 
 define BUILD_BINARY_O
 	$(OBJCOPY) \
@@ -26,6 +26,9 @@ endef
 	$(BUILD_BINARY_O)
 
 %.glyph.o: %.glyph
+	$(BUILD_BINARY_O)
+
+%.pcm.o: %.pcm
 	$(BUILD_BINARY_O)
 
 %.character: %.data
@@ -104,14 +107,10 @@ OBJS += background.o $(GBA_BG_OBJ)
 penguin-feet.elf: $(OBJS) | penguin-feet.lds
 	$(LINK_ELF)
 
-GPIO_OBJS = header.o load.o demo/main_gpio.o
-gpio.elf: $(GPIO_OBJS) | penguin-feet.lds
+DEMO_OBJS = header.o load.o pcm/28.pcm.o
+demo/%.elf: demo/%.o $(DEMO_OBJS) | penguin-feet.lds
 	$(LINK_ELF)
 
-SAWTOOTH_OBJS = header.o load.o demo/main_sawtooth.o
-sawtooth.elf: $(SAWTOOTH_OBJS) | penguin-feet.lds
-	$(LINK_ELF)
-
-deploy: penguin-feet.gba
+deploy: demo/main_pcm.gba
 
 include common.mk

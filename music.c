@@ -71,7 +71,7 @@ void music_init(void)
     );
 
   *(volatile u16 *)(IO_REG + SOUNDCNT_H) =
-    ( SOUNDCNT_H__OUTPUT_RATIO_FULL
+    ( SOUNDCNT_H__OUTPUT_1234_RATIO_FULL
     );
 
   *(volatile u16 *)(IO_REG + SOUND1_CNT_L) =
